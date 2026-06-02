@@ -1,0 +1,63 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+
+const app = express();
+app.use(express.json());
+app.use(cors());
+
+// رابط قاعدة بياناتك الحقيقي مدمج وجاهز للعمل
+const MONGO_URI = "mongodb+srv://elysia861_db_user:eB9dYzVeQ09swrpf@cluster0.sce1lve.mongodb.net/?appName=Cluster0";
+
+mongoose.connect(MONGO_URI)
+    .then(() => console.log("تم الاتصال بقاعدة بيانات القراصنة بنجاح! 🏴‍☠️"))
+    .catch(err => console.error("خطأ في الاتصال بقاعدة البيانات:", err));
+
+// هيكل بيانات اللاعب
+const UserSchema = new mongoose.Schema({
+    telegramId: { type: String, required: true, unique: true },
+    username: { type: String, default: "Pirate" },
+    mainBalance: { type: Number, default: 0.00 },
+    userLevel: { type: Number, default: 1 },
+    userXP: { type: Number, default: 0 },
+    walletAddress: { type: String, default: "" },
+    purchasedShips: { type: [Number], default: [0,0,0,0,0,0,0,0,0,0] },
+    completedTasks: { type: [Number], default: [0,0] },
+    lastActive: { type: Date, default: Date.now }
+});
+
+const User = mongoose.model('User', UserSchema);
+
+// استقبال وتحديث بيانات اللاعبين تلقائياً عبر التليجرام
+app.post('/api/user/sync', async (req, res) => {
+    const { rawUser, clientState } = req.body;
+    if (!rawUser || !rawUser.id) return res.status(400).json({ error: "بيانات غير مكتملة" });
+
+    try {
+        let user = await User.findOne({ telegramId: rawUser.id.toString() });
+
+        if (!user) {
+            user = new User({
+                telegramId: rawUser.id.toString(),
+                username: rawUser.username || rawUser.first_name || "Pirate"
+            });
+            await user.save();
+        } else if (clientState?.isSaving) {
+            user.mainBalance = clientState.mainBalance;
+            user.userLevel = clientState.userLevel;
+            user.userXP = clientState.userXP;
+            user.purchasedShips = clientState.purchasedShips;
+            user.completedTasks = clientState.completedTasks;
+            user.walletAddress = clientState.walletAddress; 
+            user.lastActive = Date.now();
+            await user.save();
+        }
+
+        res.json({ success: true, user });
+    } catch (err) {
+        res.status(500).json({ error: "خطأ في السيرفر", details: err.message });
+    }
+});
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`السيرفر يعمل على المنفذ ${PORT}`));
