@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Pirate King</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --primary-color: #ffc107;
+            --bg-color: #0b0c10;
+            --card-bg: #151a22;
+            --nav-bg: #1f2833;
+            --text-color: #ffffff;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 15px;
+            user-select: none;
+            padding-bottom: 100px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        .app-title {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: left;
+            padding-left: 10px;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+        .balance-card {
+            background: linear-gradient(135deg, #11161d, #1f2833);
+            border: 1px solid var(--primary-color);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .balance-title {
+            color: #aaa;
+            font-size: 14px;
+        }
+        .balance-amount {
+            color: var(--primary-color);
+            font-size: 42px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        .balance-currency {
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
+        
+        .mining-circle {
+            width: 240px;
+            height: 240px;
+            border: 6px solid var(--primary-color);
+            border-radius: 50%;
+            margin: 25px auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle, #1f2833 0%, #0b0c10 100%);
+            box-shadow: 0 0 25px rgba(255, 193, 7, 0.15);
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.1s ease;
+            touch-action: manipulation;
+        }
+        .mining-circle:active {
+            transform: scale(0.96);
+        }
+        .anchor-icon {
+            font-size: 55px;
+            color: #8ab4f8;
+            margin-bottom: 10px;
+            pointer-events: none;
+        }
+        .mining-status {
+            color: #aaa;
+            font-size: 13px;
+            pointer-events: none;
+        }
+        .live-mined {
+            color: var(--primary-color);
+            font-size: 36px;
+            font-weight: bold;
+            margin: 5px 0;
+            pointer-events: none;
+        }
+        .mining-rate {
+            color: var(--primary-color);
+            font-size: 14px;
+            font-weight: 500;
+            pointer-events: none;
+        }
+
+        .floating-text {
+            position: absolute;
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 24px;
+            pointer-events: none;
+            animation: floatUp 0.8s ease-out forwards;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            z-index: 9999;
+        }
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-120px) scale(1.2); }
+        }
+
+        .claim-btn, .action-btn {
+            background: linear-gradient(180deg, #ffd54f, #ffc107);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 0;
+            width: 90%;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 15px auto;
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+            display: block;
+            transition: all 0.3s ease;
+        }
+        .page-section {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .page-section.active {
+            display: block;
+        }
+        .card-item {
+            background: var(--card-bg);
+            border: 1px solid #2d3748;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 12px;
+            text-align: right;
+        }
+        
+        .fleet-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        .ship-card {
+            background: #1a222d;
+            border: 1px solid #2d3748;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: right;
+        }
+        .ship-card.owned {
+            border-color: #4caf50;
+            background: linear-gradient(90deg, #152216, #1a222d);
+        }
+        .ship-info h4 { margin: 0 0 4px 0; color: var(--primary-color); }
+        .ship-info p { margin: 0; font-size: 12px; color: #bbb; }
+        
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #11161d;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            border: 1px solid #232d3a;
+        }
+        .task-details h5 { margin: 0 0 3px 0; color: #fff; text-align: right; }
+        .task-details span { font-size: 11px; color: var(--primary-color); display: block; text-align: right; }
+
+        .wheel-wrapper {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            margin: 30px auto;
+        }
+        .wheel-arrow {
+            position: absolute;
+            top: -15px; left: 50%;
+            transform: translateX(-50%);
+            width: 0; height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 25px solid #ff4444;
+            z-index: 10;
+        }
+        .wheel-container {
+            width: 100%; height: 100%;
+            border: 6px solid var(--primary-color);
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            transition: transform 4s cubic-bezier(0.1, 0.8, 0.1, 1);
+            background: #1f2833;
+            box-shadow: 0 0 20px rgba(255, 193, 7, 0.2);
+        }
+        canvas { width: 100%; height: 100%; border-radius: 50%; display: block; }
+        .wheel-center-pin {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px; height: 40px;
+            background: var(--primary-color);
+            border-radius: 50%; z-index: 5;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        
+        .spin-btn {
+            background: var(--primary-color);
+            color: #000;
+            padding: 8px 18px;
+            border: none;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255,193,7,0.2);
+        }
+        .spin-btn.disabled { background: #445566; color: #888; cursor: not-allowed; box-shadow: none; }
+
+        .swap-box {
+            background: rgba(255, 193, 7, 0.03);
+            border: 1px solid #ffc107;
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        .swap-input-group {
+            display: flex;
+            align-items: center;
+            background: #0b0c10;
+            border: 1px solid #445566;
+            border-radius: 8px;
+            padding: 5px 10px;
+            margin: 8px 0;
+        }
+        .swap-input-group input {
+            flex: 1; background: transparent; border: none;
+            color: white; font-size: 16px; outline: none; text-align: left;
+        }
+        .swap-input-group select {
+            background: #1f2833; color: var(--primary-color);
+            border: none; padding: 5px; border-radius: 5px; font-weight: bold; outline: none;
+        }
+
+        .wallet-status-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed #445566;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .wallet-btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .w-btn { padding: 12px; border: none; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; }
+        .deposit-btn { background: #4caf50; color: white; }
+        .withdraw-btn { background: #f44336; color: white; }
+        .connect-wallet-btn { background: #007aff; color: white; width: 100%; }
+
+        .modal {
+            display: none; position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85); z-index: 2000;
+            justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--card-bg); border: 1px solid var(--primary-color);
+            border-radius: 15px; padding: 20px; width: 100%; max-width: 320px; text-align: right;
+        }
+        .modal-input {
+            width: 100%; padding: 10px; margin: 10px 0;
+            background: #0b0c10; border: 1px solid #445566;
+            color: #fff; border-radius: 8px; box-sizing: border-box; text-align: left;
+        }
+
+        .nav-bar {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: var(--nav-bg);
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            padding: 10px 3px;
+            border-top: 1px solid #2d3748;
+            gap: 3px;
+            z-index: 1000;
+        }
+        .nav-item {
+            background: transparent; border: none; color: #aaa;
+            font-size: 11px; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; padding: 6px 0;
+        }
+        .nav-item.active {
+            color: var(--primary-color);
+            background: rgba(255, 193, 7, 0.05);
+            border: 1px solid var(--primary-color);
+            border-radius: 10px;
+        }
+        .nav-icon { font-size: 18px; margin-bottom: 3px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div class="app-title">MY PIRATE KING</div>
+
+    <div class="balance-card">
+        <div class="balance-title">رصيدك من عملة MY PIRATE KING</div>
+        <div class="balance-amount" id="main-balance">0.00</div>
+        <div class="balance-currency">PIRATE$</div>
+        <div style="font-size:12px; color:#aaa; margin-top:5px;">المستوى الحالي: <span id="user-level" style="color:var(--primary-color)">1</span> (XP: <span id="user-xp">0</span>)</div>
+    </div>
+
+    <div id="mining-page" class="page-section active">
+        <div class="mining-circle" id="mining-circle" onclick="spawnFloatingMoney(event)">
+            <div class="anchor-icon">⚓</div>
+            <div class="mining-status">جاري التعدين تلقائياً...</div>
+            <div class="live-mined" id="live-mined">0.00</div>
+            <div class="mining-rate" id="rate-display">+0.0556/ثانية</div>
+        </div>
+        <button class="claim-btn" onclick="claimEarnings()">جمع الأرباح (Claim)</button>
+    </div>
+
+    <div id="fleet-page" class="page-section">
+        <h3>⚓ ترقية أسطول السفن الحربية</h3>
+        <p style="font-size:12px; color:#aaa; margin-top:-5px;">امتلاك السفن يمنحك قوة تعدين تراكمية خارقة.</p>
+        <div class="fleet-container" id="fleet-list"></div>
+    </div>
+
+    <div id="wheel-page" class="page-section">
+        <h3>عجلة الحظ اليومية</h3>
+        <p style="font-size:13px; color:#aaa;">متاحة مرة واحدة كل 24 ساعة فقط! جرب حظك للفوز بمكافآت حصرية.</p>
+        <div class="wheel-wrapper">
+            <div class="wheel-arrow"></div>
+            <div class="wheel-center-pin"></div>
+            <div class="wheel-container" id="wheel">
+                <canvas id="wheelCanvas" width="300" height="300"></canvas>
+            </div>
+        </div>
+        <button class="spin-btn" id="spinBtn" onclick="spinWheel()">تدوير العجلة</button>
+        <p id="wheel-result" style="margin-top:15px; font-weight:bold; color:var(--primary-color); height: 20px;"></p>
+    </div>
+
+    <div id="rewards-page" class="page-section">
+        <h3>🏆 المهام ونظام الإحالة</h3>
+        
+        <div class="card-item">
+            <h4 style="margin:0 0 10px 0; color:var(--primary-color);">🏴‍☠️ مهام القراصنة المبتدئين</h4>
+            <div id="tasks-container">
+                <div class="task-item" id="task-0">
+                    <div class="task-details">
+                        <h5>الاشتراك بقناة التليجرام</h5>
+                        <span>+500 PIRATE$</span>
+                    </div>
+                    <button class="spin-btn" style="padding:4px 12px;" onclick="completeTask(0, 500)">تحقق</button>
+                </div>
+                <div class="task-item" id="task-1">
+                    <div class="task-details">
+                        <h5>متابعة حسابنا على منصة X</h5>
+                        <span>+500 PIRATE$</span>
+                    </div>
+                    <button class="spin-btn" style="padding:4px 12px;" onclick="completeTask(1, 500)">تحقق</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-item">
+            <h4 style="margin:0 0 5px 0; color:var(--primary-color);">🔗 نظام الإحالة (ادعُ صديقاً)</h4>
+            <p style="font-size:12px; color:#ccc; margin-bottom:10px;">احصل على 50 عملة PIRATE$ ومكافأة XP عن كل صديق ينضم عبر رابطك.</p>
+            <button class="spin-btn" style="width:100%;" onclick="alert('تم نسخ الرابط!')">نسخ رابط الإحالة الخاص بك</button>
+        </div>
+    </div>
+
+    <div id="wallet-page" class="page-section">
+        <h3>المحفظة والتبديل المالي</h3>
+        <p style="font-size:13px; color:#aaa;">حول أرباح التعدين إلى عملات مشفرة حقيقية قابلة للسحب.</p>
+        
+        <div class="card-item">
+            <div class="wallet-status-box">
+                <div id="wallet-address-display" style="font-size:13px; color:#ccc; word-break: break-all;">المحفظة غير متصلة ❌</div>
+                <div style="margin-top:10px; font-size:14px; text-align:right; border-top:1px dashed #334455; padding-top:8px;">
+                     رصيد المحفظة الجاهز للسحب:<br>
+                    💰 <span id="crypto-balance-usdt" style="color:#4caf50; font-weight:bold;">0.00</span> USDT | 
+                    💎 <span id="crypto-balance-ton" style="color:#007aff; font-weight:bold;">0.0000</span> TON
+                </div>
+            </div>
+            <button class="w-btn connect-wallet-btn" id="connectWalletBtn" onclick="toggleWalletConnect()">🔗 ربط محفظة TON Wallet</button>
+            
+            <div class="swap-box">
+                <h4 style="margin:0 0 5px 0; color:var(--primary-color); text-align:right;">🔄 تبديل العملات (Swap)</h4>
+                <p style="font-size:11px; color:#aaa; margin:0; text-align:right;">كل 100,000 عملة PIRATE$ تساوي 1.00$ دولار (سعر TON المعتمد: 1.85$)</p>
+                
+                <div class="swap-input-group">
+                    <input type="number" id="swap-input-amount" placeholder="أدخل عدد عملات PIRATE$" oninput="calculateSwap()">
+                    <span style="color:#aaa; font-size:12px; font-weight:bold; margin-left:5px;">من:</span>
+                </div>
+                
+                <div class="swap-input-group">
+                    <input type="text" id="swap-output-amount" placeholder="الكمية المستلمة" readonly>
+                    <select id="swap-target-currency" onchange="calculateSwap()">
+                        <option value="USDT">USDT ($)</option>
+                        <option value="TON">TON (💎)</option>
+                    </select>
+                </div>
+                <button class="action-btn" style="width:100%; margin:10px 0 0 0; font-size:15px; padding:10px 0;" onclick="executeSwap()">تأكيد عملية التبديل</button>
+            </div>
+
+            <div class="wallet-btn-group">
+                <button class="w-btn deposit-btn" onclick="openModal('deposit-modal')">📥 إيداع TON</button>
+                <button class="w-btn withdraw-btn" onclick="openModal('withdraw-modal')">📤 سحب الأرباح</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-bar">
+        <button class="nav-item" data-page="wallet-page">
+            <div class="nav-icon">👛</div><div>المحفظة</div>
+        </button>
+        <button class="nav-item" data-page="rewards-page">
+            <div class="nav-icon">🏆</div><div>الجوائز</div>
+        </button>
+        <button class="nav-item" data-page="wheel-page">
+            <div class="nav-icon">🎡</div><div>العجلة</div>
+        </button>
+        <button class="nav-item" data-page="fleet-page">
+            <div class="nav-icon">🚢</div><div>الأسطول</div>
+        </button>
+        <button class="nav-item active" data-page="mining-page">
+            <div class="nav-icon">⛏️</div><div>التعدين</div>
+        </button>
+    </div>
+
+    <div id="deposit-modal" class="modal">
+        <div class="modal-content">
+            <h4 style="margin:0 0 10px 0; color:#4caf50;">📥 عملية إيداع عملات</h4>
+            <div style="font-size:11px; background:#000; padding:8px; text-align:center; border-radius:5px; color:var(--primary-color); word-break:break-all;">EQD_PirateKing_ProjectWallet_Address_Example</div>
+            <input type="number" class="modal-input" placeholder="الكمية بـ TON" id="dep-amount">
+            <button class="w-btn deposit-btn" style="width:100%;" onclick="submitDeposit()">تأكيد الإيداع</button>
+            <button class="w-btn" style="width:100%; background:#445566; margin-top:5px; color:#fff;" onclick="closeModal('deposit-modal')">إلغاء</button>
+        </div>
+    </div>
+
+    <div id="withdraw-modal" class="modal">
+        <div class="modal-content">
+            <h4 style="margin:0 0 10px 0; color:#f44336;">📤 طلب سحب أرباح</h4>
+            <input type="text" class="modal-input" placeholder="UQA..." id="with-address">
+            <input type="number" class="modal-input" placeholder="الكمية المطلوبة للسحب" id="with-amount">
+            <button class="w-btn withdraw-btn" style="width:100%;" onclick="submitWithdraw()">إرسال طلب السحب</button>
+            <button class="w-btn" style="width:100%; background:#445566; margin-top:5px; color:#fff;" onclick="closeModal('withdraw-modal')">إلغاء</button>
+        </div>
+    </div>
+
+    <script>
+        let mainBalance = 0.00;
+        let currentMined = 0.00;
+        let userXP = 0;
+        let userLevel = 1;
+        let walletConnected = false;
+        let isSpinning = false;
+        let walletUSDT = 0.00;
+        let walletTON = 0.0000;
+        let completedTasks = [0, 0];
+        let lastSpinTime = 0; 
+
+        const baseRatePerSecond = 0.0556; 
+        const tonPriceInUSD = 1.85; 
+
+        const marketShips = [
+            { id: 0, name: "1. سفينة الاستطلاع", price: 100000, boost: 0.10, desc: "سرعة إضافية 10%+" },
+            { id: 1, name: "2. صائد الجوائز", price: 250000, boost: 0.25, desc: "سرعة إضافية 25%+" },
+            { id: 2, name: "3. سفينة المدفعية", price: 500000, boost: 0.55, desc: "سرعة إضافية 55%+" },
+            { id: 3, name: "4. المداهم الليلي", price: 1000000, boost: 1.20, desc: "سرعة إضافية 120%+" },
+            { id: 4, name: "5. الغواصة الشبح", price: 2000000, boost: 2.50, desc: "سرعة إضافية 250%+" },
+            { id: 5, name: "6. سفينة العاصفة", price: 4000000, boost: 5.20, desc: "سرعة إضافية 520%+" },
+            { id: 6, name: "7. قاهرة البحار", price: 7500000, boost: 10.00, desc: "سرعة إضافية 1000%+" },
+            { id: 7, name: "8. سفينة المدمرة", price: 12000000, boost: 17.00, desc: "سرعة إضافية 1700%+" },
+            { id: 8, name: "9. لؤلؤة الهلاك", price: 20000000, boost: 30.00, desc: "سرعة إضافية 3000%+" },
+            { id: 9, name: "10. عرش الطاغية", price: 50000000, boost: 80.00, desc: "سرعة خارقة 8000%+" }
+        ];
+
+        let purchasedShips = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+        const prizes = [
+            { text: "10 XP", color: "#2c3e50", action: () => { userXP += 10; checkLevelUp(); } },
+            { text: "5 PIRATE$", color: "#1a5276", action: () => { mainBalance += 5; } },
+            { text: "0.001 TON", color: "#117a65", action: () => { walletTON += 0.001; alert("حظ استثنائي! فزت بـ 0.001 TON!"); } },
+            { text: "20 XP", color: "#6c3483", action: () => { userXP += 20; checkLevelUp(); } },
+            { text: "0.005 USDT", color: "#78281f", action: () => { walletUSDT += 0.005; alert("حظ استثنائي! فزت بـ 0.005 USDT!"); } },
+            { text: "حظ أوفر", color: "#515a5a", action: () => { alert("حظاً أوفر كابتن! 🏴‍☠️"); } }
+        ];
+
+        function saveGameData() {
+            const gameData = {
+                mainBalance: mainBalance,
+                purchasedShips: purchasedShips,
+                userXP: userXP,
+                userLevel: userLevel,
+                walletConnected: walletConnected,
+                walletUSDT: walletUSDT,
+                walletTON: walletTON,
+                completedTasks: completedTasks,
+                lastSpinTime: lastSpinTime
+            };
+            localStorage.setItem('pirate_king_secure_save', JSON.stringify(gameData));
+        }
+
+        function loadGameData() {
+            const savedRaw = localStorage.getItem('pirate_king_secure_save'); // تم تصحيح السطر هنا من setItem إلى getItem
+            if (savedRaw) {
+                const data = JSON.parse(savedRaw);
+                mainBalance = data.mainBalance || 0;
+                purchasedShips = data.purchasedShips || [0,0,0,0,0,0,0,0,0,0];
+                userXP = data.userXP || 0;
+                userLevel = data.userLevel || 1;
+                walletConnected = data.walletConnected || false;
+                walletUSDT = data.walletUSDT || 0;
+                walletTON = data.walletTON || 0;
+                completedTasks = data.completedTasks || [0, 0];
+                lastSpinTime = data.lastSpinTime || 0;
+            }
+        }
+
+        function calculateTotalBoost() {
+            let totalBoost = 0;
+            for(let i=0; i<purchasedShips.length; i++) {
+                if(purchasedShips[i] === 1) totalBoost += marketShips[i].boost;
+            }
+            return totalBoost;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            loadGameData();
+            renderFleetStore();
+            renderTasks();
+            drawWheel();
+            updateDisplay();
+            checkWheelCooldown();
+
+            setInterval(() => {
+                let currentRate = baseRatePerSecond * (1 + calculateTotalBoost());
+                currentMined += currentRate;
+                document.getElementById('live-mined').innerText = currentMined.toFixed(2);
+            }, 1000);
+
+            setInterval(checkWheelCooldown, 1000);
+
+            const navItems = document.querySelectorAll('.nav-bar .nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const pageId = this.getAttribute('data-page');
+                    document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+                    document.getElementById(pageId).classList.add('active');
+                    navItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        });
+
+        function checkWheelCooldown() {
+            const btn = document.getElementById('spinBtn');
+            if (!btn || isSpinning) return;
+
+            const now = Date.now();
+            const cooldown = 24 * 60 * 60 * 1000; 
+            const timePassed = now - lastSpinTime;
+
+            if (timePassed < cooldown) {
+                const timeLeft = cooldown - timePassed;
+                const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                btn.innerText = `متاح بعد: ${hours}h ${minutes}m ${seconds}s`;
+                btn.classList.add('disabled');
+                btn.disabled = true;
+            } else {
+                btn.innerText = "تدوير العجلة";
+                btn.classList.remove('disabled');
+                btn.disabled = false;
+            }
+        }
+
+        function spawnFloatingMoney(event) {
+            const circle = document.getElementById('mining-circle');
+            const rect = circle.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+
+            const floatingText = document.createElement('div');
+            floatingText.className = 'floating-text';
+            floatingText.innerText = '+1';
+            floatingText.style.left = `${x}px`;
+            floatingText.style.top = `${y}px`;
+
+            circle.appendChild(floatingText);
+            setTimeout(() => { floatingText.remove(); }, 800);
+        }
+
+        function claimEarnings() {
+            if (currentMined > 0) {
+                mainBalance += currentMined;
+                currentMined = 0.00;
+                updateDisplay();
+                saveGameData();
+            }
+        }
+
+        function renderTasks() {
+            for(let i=0; i<completedTasks.length; i++) {
+                if(completedTasks[i] === 1) {
+                    const taskBox = document.getElementById(`task-${i}`);
+                    if(taskBox) {
+                        const btn = taskBox.querySelector('button');
+                        btn.innerText = "مكتملة ✓";
+                        btn.classList.add('disabled');
+                        btn.removeAttribute('onclick');
+                    }
+                }
+            }
+        }
+
+        function completeTask(id, reward) {
+            if(completedTasks[id] === 1) return;
+            completedTasks[id] = 1;
+            mainBalance += reward;
+            renderTasks();
+            updateDisplay();
+            saveGameData();
+            alert(`تم التوثق بنجاح! حصلت على +${reward.toLocaleString()} عملة! 🏴‍☠️`);
+        }
+
+        function renderFleetStore() {
+            const container = document.getElementById('fleet-list');
+            container.innerHTML = "";
+            marketShips.forEach(ship => {
+                const isOwned = purchasedShips[ship.id] === 1;
+                const card = document.createElement('div');
+                card.className = `ship-card ${isOwned ? 'owned' : ''}`;
+                card.innerHTML = `
+                    <div class="ship-info">
+                        <h4>${ship.name}</h4>
+                        <p>${ship.desc} | السعر: <span style="color:var(--primary-color)">${ship.price.toLocaleString()} PIRATE$</span></p>
+                    </div>
+                    <div>
+                        <button class="spin-btn ${isOwned ? 'disabled' : ''}" onclick="buySpecificShip(${ship.id})">
+                            ${isOwned ? 'مملوكة ✓' : 'شراء'}
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function buySpecificShip(id) {
+            if (purchasedShips[id] === 1) return alert("تملك هذه السفينة بالفعل!");
+            const ship = marketShips[id];
+            if (mainBalance >= ship.price) {
+                mainBalance -= ship.price;
+                purchasedShips[id] = 1;
+                renderFleetStore();
+                updateDisplay();
+                saveGameData();
+                alert(`تهانينا كابتن! تم شراء ${ship.name}.`);
+            } else {
+                alert("رصيدك غير كافٍ لشراء هذه السفينة!");
+            }
+        }
+
+        function updateDisplay() {
+            document.getElementById('main-balance').innerText = mainBalance.toFixed(2);
+            document.getElementById('crypto-balance-usdt').innerText = walletUSDT.toFixed(2);
+            document.getElementById('crypto-balance-ton').innerText = walletTON.toFixed(4);
+            document.getElementById('user-xp').innerText = userXP;
+            document.getElementById('user-level').innerText = userLevel;
+            let currentRate = baseRatePerSecond * (1 + calculateTotalBoost());
+            document.getElementById('rate-display').innerText = `+${currentRate.toFixed(4)}/ثانية`;
+        }
+
+        function calculateSwap() {
+            const inputAmount = parseFloat(document.getElementById('swap-input-amount').value);
+            const targetCurrency = document.getElementById('swap-target-currency').value;
+            const outputField = document.getElementById('swap-output-amount');
+            if (isNaN(inputAmount) || inputAmount <= 0) { outputField.value = ""; return; }
+            let valueInUSD = inputAmount / 100000;
+            if (targetCurrency === "USDT") outputField.value = `${valueInUSD.toFixed(4)} $`;
+            else if (targetCurrency === "TON") outputField.value = `${(valueInUSD / tonPriceInUSD).toFixed(6)} 💎`;
+        }
+
+        function executeSwap() {
+            const inputAmount = parseFloat(document.getElementById('swap-input-amount').value);
+            const targetCurrency = document.getElementById('swap-target-currency').value;
+            if (isNaN(inputAmount) || inputAmount <= 0) return alert("الرجاء إدخال كمية صحيحة!");
+            if (mainBalance < inputAmount) return alert("رصيدك لا يكفي!");
+            mainBalance -= inputAmount;
+            let valueInUSD = inputAmount / 100000;
+            if (targetCurrency === "USDT") { walletUSDT += valueInUSD; }
+            else if (targetCurrency === "TON") { walletTON += (valueInUSD / tonPriceInUSD); }
+            document.getElementById('swap-input-amount').value = "";
+            document.getElementById('swap-output-amount').value = "";
+            updateDisplay(); saveGameData();
+            alert("تم التبديل بنجاح!");
+        }
+
+        function checkLevelUp() {
+            let nextLevelXP = userLevel * 150; 
+            if (userXP >= nextLevelXP) { 
+                userXP -= nextLevelXP; 
+                userLevel++; 
+                updateDisplay(); 
+                saveGameData(); 
+            }
+        }
+
+        function drawWheel() {
+            const canvas = document.getElementById('wheelCanvas'); if(!canvas) return;
+            const ctx = canvas.getContext('2d'); const radius = canvas.width / 2;
+            const sliceAngle = (2 * Math.PI) / prizes.length;
+            for (let i = 0; i < prizes.length; i++) {
+                ctx.beginPath(); ctx.fillStyle = prizes[i].color; ctx.moveTo(radius, radius);
+                ctx.arc(radius, radius, radius, i * sliceAngle, (i + 1) * sliceAngle); ctx.fill();
+                ctx.save(); ctx.translate(radius, radius); ctx.rotate(i * sliceAngle + sliceAngle / 2);
+                ctx.fillStyle = "#fff"; ctx.font = "bold 11px Arial"; ctx.fillText(prizes[i].text, radius - 55, 5); ctx.restore();
+            }
+        }
+
+        function spinWheel() {
+            const now = Date.now();
+            if (isSpinning || (now - lastSpinTime < 24 * 60 * 60 * 1000)) return; 
+            
+            isSpinning = true;
+            lastSpinTime = now; 
+            saveGameData();
+            checkWheelCooldown();
+
+            const wheel = document.getElementById('wheel'); 
+            const prizeIndex = Math.floor(Math.random() * prizes.length);
+            const totalRotation = 1800 + (360 - (prizeIndex * 60)); 
+            wheel.style.transform = `rotate(${totalRotation}deg)`;
+            
+            setTimeout(() => { 
+                isSpinning = false; 
+                prizes[prizeIndex].action(); 
+                updateDisplay(); 
+                saveGameData(); 
+                checkWheelCooldown();
+                document.getElementById('wheel-result').innerText = `الجائزة: ${prizes[prizeIndex].text}`; 
+            }, 4000);
+        }
+
+        function toggleWalletConnect() { walletConnected = !walletConnected; updateDisplay(); saveGameData(); }
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+        function submitDeposit() { alert("تم طلب الإيداع"); closeModal('deposit-modal'); }
+        function submitWithdraw() { alert("تم طلب السحب"); closeModal('withdraw-modal'); }
+    </script>
+</body>
+</html>
