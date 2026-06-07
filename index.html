@@ -37,360 +37,728 @@
         }
         .balance-card {
             background: linear-gradient(135deg, #11161d, #1f2833);
-            border: 1px solid #2c3b4e;
-            border-radius: 15px;
+            border: 1px solid var(--primary-color);
+            border-radius: 20px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
         .balance-title {
-            font-size: 12px;
-            color: #85929e;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-        }
-        .balance-value {
-            font-size: 32px;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-bottom: 15px;
-        }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-        .stat-item {
-            background: rgba(255,255,255,0.03);
-            border-radius: 8px;
-            padding: 10px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .stat-label {
-            font-size: 11px;
-            color: #85929e;
-        }
-        .stat-val {
+            color: #aaa;
             font-size: 14px;
-            font-weight: bold;
-            margin-top: 3px;
         }
-        .main-btn {
-            background: linear-gradient(90deg, #ffc107, #ff9800);
-            border: none;
+        .balance-amount {
+            color: var(--primary-color);
+            font-size: 42px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        .balance-currency {
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
+        
+        .mining-circle {
+            width: 240px;
+            height: 240px;
+            border: 6px solid var(--primary-color);
+            border-radius: 50%;
+            margin: 25px auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle, #1f2833 0%, #0b0c10 100%);
+            box-shadow: 0 0 25px rgba(255, 193, 7, 0.15);
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.1s ease;
+            touch-action: manipulation;
+        }
+        .mining-circle:active {
+            transform: scale(0.96);
+        }
+        .anchor-icon {
+            font-size: 55px;
+            color: #8ab4f8;
+            margin-bottom: 10px;
+            pointer-events: none;
+        }
+        .mining-status {
+            color: #aaa;
+            font-size: 13px;
+            pointer-events: none;
+        }
+        .live-mined {
+            color: var(--primary-color);
+            font-size: 36px;
+            font-weight: bold;
+            margin: 5px 0;
+            pointer-events: none;
+        }
+        .mining-rate {
+            color: var(--primary-color);
+            font-size: 14px;
+            font-weight: 500;
+            pointer-events: none;
+        }
+
+        .floating-text {
+            position: absolute;
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 24px;
+            pointer-events: none;
+            animation: floatUp 0.8s ease-out forwards;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            z-index: 9999;
+        }
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-120px) scale(1.2); }
+        }
+
+        .claim-btn, .action-btn {
+            background: linear-gradient(180deg, #ffd54f, #ffc107);
             color: #000;
-            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 0;
+            width: 90%;
             font-size: 18px;
             font-weight: bold;
-            border-radius: 50px;
             cursor: pointer;
-            box-shadow: 0 4px 20px rgba(255,193,7,0.4);
-            width: 80%;
-            max-width: 300px;
-            margin: 20px auto;
-            transition: transform 0.1s;
+            margin: 15px auto;
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+            display: block;
+            transition: all 0.3s ease;
         }
-        .main-btn:active {
-            transform: scale(0.95);
+        .page-section {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
         }
-        .wheel-container {
+        .page-section.active {
+            display: block;
+        }
+        .card-item {
+            background: var(--card-bg);
+            border: 1px solid #2d3748;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 12px;
+            text-align: start;
+        }
+        
+        .fleet-container {
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        .ship-card {
+            background: #1a222d;
+            border: 1px solid #2d3748;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: start;
+        }
+        .ship-card.owned {
+            border-color: #4caf50;
+            background: linear-gradient(90deg, #152216, #1a222d);
+        }
+        .ship-info h4 { margin: 0 0 4px 0; color: var(--primary-color); }
+        .ship-info p { margin: 0; font-size: 12px; color: #bbb; }
+        
+        .task-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #11161d;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            border: 1px solid #232d3a;
+        }
+        .task-details h5 { margin: 0 0 3px 0; color: #fff; text-align: start; }
+        .task-details span { font-size: 11px; color: var(--primary-color); display: block; text-align: start; }
+
+        .wheel-wrapper {
             position: relative;
             width: 280px;
             height: 280px;
             margin: 30px auto;
         }
-        canvas {
-            border-radius: 50%;
-            box-shadow: 0 0 25px rgba(255,193,7,0.3);
-            border: 5px solid #1f2833;
-        }
-        .wheel-pointer {
+        .wheel-arrow {
             position: absolute;
-            top: -15px;
-            left: 50%;
+            top: -15px; left: 50%;
             transform: translateX(-50%);
-            width: 0;
-            height: 0;
+            width: 0; height: 0;
             border-left: 15px solid transparent;
             border-right: 15px solid transparent;
-            border-top: 30px solid #e74c3c;
+            border-top: 25px solid #ff4444;
             z-index: 10;
         }
+        .wheel-container {
+            width: 100%; height: 100%;
+            border: 6px solid var(--primary-color);
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            transition: transform 4s cubic-bezier(0.1, 0.8, 0.1, 1);
+            background: #1f2833;
+            box-shadow: 0 0 20px rgba(255, 193, 7, 0.2);
+        }
+        canvas { width: 100%; height: 100%; border-radius: 50%; display: block; }
+        .wheel-center-pin {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px; height: 40px;
+            background: var(--primary-color);
+            border-radius: 50%; z-index: 5;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        
+        .spin-btn {
+            background: var(--primary-color);
+            color: #000;
+            padding: 8px 18px;
+            border: none;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(255,193,7,0.2);
+        }
+        .spin-btn.disabled { background: #445566; color: #888; cursor: not-allowed; box-shadow: none; }
+
+        .swap-box {
+            background: rgba(255, 193, 7, 0.03);
+            border: 1px solid #ffc107;
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        .swap-input-group {
+            display: flex;
+            align-items: center;
+            background: #0b0c10;
+            border: 1px solid #445566;
+            border-radius: 8px;
+            padding: 5px 10px;
+            margin: 8px 0;
+        }
+        .swap-input-group input {
+            flex: 1; background: transparent; border: none;
+            color: white; font-size: 16px; outline: none; text-align: start;
+        }
+        .swap-input-group select {
+            background: #1f2833; color: var(--primary-color);
+            border: none; padding: 5px; border-radius: 5px; font-weight: bold; outline: none;
+        }
+
+        .wallet-status-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #445566;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .wallet-btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .w-btn { padding: 12px; border: none; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; }
+        .deposit-btn { background: #4caf50; color: white; }
+        .withdraw-btn { background: #f44336; color: white; }
+        .connect-wallet-btn { background: #007aff; color: white; width: 100%; }
+
+        .modal {
+            display: none; position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.85); z-index: 2000;
+            justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--card-bg); border: 1px solid var(--primary-color);
+            border-radius: 15px; padding: 20px; width: 100%; max-width: 320px; text-align: start;
+        }
+        .modal-input {
+            width: 100%; padding: 10px; margin: 10px 0;
+            background: #0b0c10; border: 1px solid #445566;
+            color: #fff; border-radius: 8px; box-sizing: border-box; text-align: start;
+        }
+
         .nav-bar {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: var(--nav-bg);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            border-top: 1px solid #2c3b4e;
-            z-index: 100;
+            bottom: 0; left: 0; right: 0;
+            background: var(--nav-bg);
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            padding: 10px 3px;
+            border-top: 1px solid #2d3748;
+            gap: 3px;
+            z-index: 1000;
         }
         .nav-item {
-            color: #85929e;
-            font-size: 11px;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            background: transparent; border: none; color: #aaa;
+            font-size: 11px; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; padding: 6px 0;
         }
         .nav-item.active {
             color: var(--primary-color);
+            background: rgba(255, 193, 7, 0.05);
+            border: 1px solid var(--primary-color);
+            border-radius: 10px;
         }
-        .nav-icon {
-            font-size: 20px;
-            margin-bottom: 2px;
-        }
-        .page {
-            display: none;
-        }
-        .page.active {
-            display: block;
-        }
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.85);
-            z-index: 200;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .modal.active {
-            display: flex;
-        }
-        .modal-content {
-            background: var(--card-bg);
-            border: 1px solid #2c3b4e;
-            border-radius: 15px;
-            padding: 25px;
-            width: 100%;
-            max-width: 320px;
-            position: relative;
-        }
-        .close-modal {
-            position: absolute;
-            top: 10px; right: 15px;
-            font-size: 20px;
-            cursor: pointer;
-            color: #85929e;
-        }
-        input[type="text"], input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 8px;
-            border: 1px solid #2c3b4e;
-            background: #0b0c10;
-            color: #fff;
-            box-sizing: border-box;
-        }
-        .action-btn {
-            background: var(--primary-color);
-            color: #000;
-            border: none;
-            padding: 12px 20px;
-            font-weight: bold;
-            border-radius: 8px;
-            width: 100%;
-            cursor: pointer;
-            margin-top: 10px;
-        }
+        .nav-icon { font-size: 18px; margin-bottom: 3px; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <div class="app-title" id="app-header-title">🏴‍☠️ My Pirate King</div>
+    <div class="app-title">MY PIRATE KING</div>
 
-    <div id="page-home" class="page active">
-        <div class="balance-card">
-            <div class="balance-title" id="lbl-balance">Pirate Gold Balance</div>
-            <div class="balance-value" id="coins-display">0.000000</div>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-label" id="lbl-gems">Gems💎</div>
-                    <div class="stat-val" id="gems-display">0</div>
+    <div class="balance-card">
+        <div class="balance-title" data-i18n="balance_title">Your balance of MY PIRATE KING</div>
+        <div class="balance-amount" id="main-balance">0.00</div>
+        <div class="balance-currency">PIRATE$</div>
+        <div style="font-size:12px; color:#aaa; margin-top:5px;"><span data-i18n="level_lbl">Current Level:</span> <span id="user-level" style="color:var(--primary-color)">1</span> (XP: <span id="user-xp">0</span>)</div>
+    </div>
+
+    <div id="mining-page" class="page-section active">
+        <div class="mining-circle" id="mining-circle" onclick="spawnFloatingMoney(event)">
+            <div class="anchor-icon">⚓</div>
+            <div class="mining-status" data-i18n="mining_status">Mining automatically...</div>
+            <div class="live-mined" id="live-mined">0.00</div>
+            <div class="mining-rate" id="rate-display">+0.0556/s</div>
+        </div>
+        <button class="claim-btn" data-i18n="claim_btn" onclick="claimEarnings()">Claim Earnings</button>
+    </div>
+
+    <div id="fleet-page" class="page-section">
+        <h3 data-i18n="fleet_title">⚓ Upgrade Warship Fleet</h3>
+        <p style="font-size:12px; color:#aaa; margin-top:-5px;" data-i18n="fleet_desc">Owning ships gives you massive cumulative mining power.</p>
+        <div class="fleet-container" id="fleet-list"></div>
+    </div>
+
+    <div id="wheel-page" class="page-section">
+        <h3 data-i18n="wheel_title">Daily Lucky Wheel</h3>
+        <p style="font-size:13px; color:#aaa;" data-i18n="wheel_desc">Available once every 24 hours only! Try your luck to win exclusive rewards.</p>
+        <div class="wheel-wrapper">
+            <div class="wheel-arrow"></div>
+            <div class="wheel-center-pin"></div>
+            <div class="wheel-container" id="wheel">
+                <canvas id="wheelCanvas" width="300" height="300"></canvas>
+            </div>
+        </div>
+        <button class="spin-btn" id="spinBtn" data-i18n="spin_btn" onclick="spinWheel()">Spin Wheel</button>
+        <p id="wheel-result" style="margin-top:15px; font-weight:bold; color:var(--primary-color); height: 20px;"></p>
+    </div>
+
+    <div id="rewards-page" class="page-section">
+        <h3 data-i18n="rewards_title">🏆 Tasks & Referral System</h3>
+        
+        <div class="card-item">
+            <h4 style="margin:0 0 10px 0; color:var(--primary-color);" data-i18n="tasks_group_title">🏴‍☠️ Novice Pirate Tasks</h4>
+            <div id="tasks-container">
+                <div class="task-item" id="task-0">
+                    <div class="task-details">
+                        <h5 data-i18n="task_tg">Subscribe to Telegram Channel</h5>
+                        <span>+500 PIRATE$</span>
+                    </div>
+                    <button class="spin-btn" style="padding:4px 12px;" data-i18n="verify" onclick="completeTask(0, 500)">Verify</button>
                 </div>
-                <div class="stat-item">
-                    <div class="stat-label" id="lbl-hash">Mining Power⚔️</div>
-                    <div class="stat-val" id="hashrate-display">10 H/s</div>
+                <div class="task-item" id="task-1">
+                    <div class="task-details">
+                        <h5 data-i18n="task_x">Follow our X Account</h5>
+                        <span>+500 PIRATE$</span>
+                    </div>
+                    <button class="spin-btn" style="padding:4px 12px;" data-i18n="verify" onclick="completeTask(1, 500)">Verify</button>
                 </div>
             </div>
         </div>
-        
-        <div class="wheel-container">
-            <div class="wheel-pointer"></div>
-            <canvas id="wheel" width="280" height="280"></canvas>
-        </div>
-        
-        <button class="main-btn" id="spin-btn" onclick="spinWheel()">SPIN WHEEL</button>
-        <div id="wheel-result" style="margin-top:10px; font-weight:bold; color:var(--primary-color);"></div>
-    </div>
 
-    <div id="page-wallet" class="page">
-        <div class="balance-card">
-            <div class="balance-title" id="lbl-status">Wallet Connection Status</div>
-            <div id="wallet-address-display" style="font-size:14px; margin: 15px 0; font-family:monospace; word-break:break-all; color:#85929e;">Not Connected</div>
-            <button class="action-btn" id="connectWalletBtn" onclick="toggleWalletConnect()">Connect TON Wallet</button>
-        </div>
-        
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px;">
-            <button class="action-btn" style="background:#2ecc71; color:#fff;" id="btn-dep" onclick="openModal('deposit-modal')">Deposit</button>
-            <button class="action-btn" style="background:#e74c3c; color:#fff;" id="btn-with" onclick="openModal('withdraw-modal')">Withdraw</button>
+        <div class="card-item">
+            <h4 style="margin:0 0 5px 0; color:var(--primary-color);" data-i18n="ref_title">🔗 Referral System (Invite Friends)</h4>
+            <p style="font-size:12px; color:#ccc; margin-bottom:10px;" data-i18n="ref_desc">Get 50 PIRATE$ and XP rewards for each friend who joins via your link.</p>
+            <button class="spin-btn" style="width:100%;" data-i18n="ref_btn" onclick="shareReferralLink()">Invite Friends / Copy Link</button>
         </div>
     </div>
 
-    <div id="page-settings" class="page">
-        <div class="balance-card" style="text-align:start;">
-            <h3 style="margin-top:0;" id="lbl-lang-title">Language / اللغة</h3>
-            <button class="action-btn" style="background:#34495e; color:#fff; margin-bottom:10px;" onclick="setLanguage('en')">English</button>
-            <button class="action-btn" style="background:#34495e; color:#fff;" onclick="setLanguage('ar')">العربية</button>
+    <div id="wallet-page" class="page-section">
+        <h3 data-i18n="wallet_title">Wallet & Swap</h3>
+        <p style="font-size:13px; color:#aaa;" data-i18n="wallet_desc">Convert your mining earnings into real withdrawable crypto.</p>
+        
+        <div class="card-item">
+            <div class="wallet-status-box">
+                <div id="wallet-address-display" style="font-size:13px; color:#ccc; word-break: break-all;" data-i18n="wallet_dis">Wallet Disconnected ❌</div>
+                <div style="margin-top:10px; font-size:14px; text-align:start; border-top:1px dashed #334455; padding-top:8px;">
+                    <span data-i18n="wallet_avail">Withdrawable Wallet Balance:</span><br>
+                    💰 <span id="crypto-balance-usdt" style="color:#4caf50; font-weight:bold;">0.00</span> USDT | 
+                    💎 <span id="crypto-balance-ton" style="color:#007aff; font-weight:bold;">0.0000</span> TON
+                </div>
+            </div>
+            <button class="w-btn connect-wallet-btn" id="connectWalletBtn" data-i18n="connect_wallet" onclick="toggleWalletConnect()">🔗 Connect TON Wallet</button>
+            
+            <div class="swap-box">
+                <h4 style="margin:0 0 5px 0; color:var(--primary-color);" data-i18n="swap_title">🔄 Currency Swap</h4>
+                <p style="font-size:11px; color:#aaa; margin:0;" data-i18n="swap_rate_desc">Every 100,000 PIRATE$ equals 1.00$ USD (Approved TON Price: 1.85$)</p>
+                
+                <div class="swap-input-group">
+                    <input type="number" id="swap-input-amount" placeholder="PIRATE$" oninput="calculateSwap()">
+                    <span style="color:#aaa; font-size:12px; font-weight:bold; margin-left:5px;" data-i18n="from_lbl">From:</span>
+                </div>
+                
+                <div class="swap-input-group">
+                    <input type="text" id="swap-output-amount" placeholder="0.00" readonly>
+                    <select id="swap-target-currency" onchange="calculateSwap()">
+                        <option value="USDT">USDT ($)</option>
+                        <option value="TON">TON (💎)</option>
+                    </select>
+                </div>
+                <button class="action-btn" style="width:100%; margin:10px 0 0 0; font-size:15px; padding:10px 0;" data-i18n="confirm_swap" onclick="executeSwap()">Confirm Swap</button>
+            </div>
+
+            <div class="wallet-btn-group">
+                <button class="w-btn deposit-btn" data-i18n="deposit_lbl" onclick="openModal('deposit-modal')">📥 Deposit TON</button>
+                <button class="w-btn withdraw-btn" data-i18n="withdraw_lbl" onclick="openModal('withdraw-modal')">📤 Withdraw Earnings</button>
+            </div>
         </div>
-        <div style="font-size:11px; color:#566573; margin-top:30px;">
-            My Pirate King v1.1.0-mainnet<br>Powered by TON Blockchain
-        </div>
+    </div>
+
+    <div class="nav-bar">
+        <button class="nav-item" data-page="wallet-page">
+            <div class="nav-icon">👛</div><div data-i18n="nav_wallet">Wallet</div>
+        </button>
+        <button class="nav-item" data-page="rewards-page">
+            <div class="nav-icon">🏆</div><div data-i18n="nav_rewards">Rewards</div>
+        </button>
+        <button class="nav-item" data-page="wheel-page">
+            <div class="nav-icon">🎡</div><div data-i18n="nav_wheel">Wheel</div>
+        </button>
+        <button class="nav-item" data-page="fleet-page">
+            <div class="nav-icon">🚢</div><div data-i18n="nav_fleet">Fleet</div>
+        </button>
+        <button class="nav-item active" data-page="mining-page">
+            <div class="nav-icon">⛏️</div><div data-i18n="nav_mining">Mining</div>
+        </button>
     </div>
 
     <div id="deposit-modal" class="modal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('deposit-modal')">&times;</span>
-            <h3 id="mdl-dep-title">Deposit Crypto</h3>
-            <p style="font-size:12px; color:#85929e;" id="mdl-dep-desc">Enter amount to generate secure payload contract</p>
-            <input type="number" id="dep-amount" placeholder="Amount in TON" step="0.1">
-            <button class="action-btn" id="mdl-dep-btn" onclick="submitDeposit()">Confirm Deposit</button>
+            <h4 style="margin:0 0 10px 0; color:#4caf50;" data-i18n="deposit_modal_title">📥 Deposit Coins Process</h4>
+            <div style="font-size:11px; background:#000; padding:8px; text-align:center; border-radius:5px; color:var(--primary-color); word-break:break-all;">EQD_PirateKing_ProjectWallet_Address_Example</div>
+            <input type="number" class="modal-input" placeholder="TON Amount" id="dep-amount">
+            <button class="w-btn deposit-btn" style="width:100%;" data-i18n="submit_deposit" onclick="submitDeposit()">Confirm Deposit</button>
+            <button class="w-btn" style="width:100%; background:#445566; margin-top:5px; color:#fff;" data-i18n="cancel" onclick="closeModal('deposit-modal')">Cancel</button>
         </div>
     </div>
 
     <div id="withdraw-modal" class="modal">
         <div class="modal-content">
-            <span class="close-modal" onclick="closeModal('withdraw-modal')">&times;</span>
-            <h3 id="mdl-with-title">Secure Withdrawal</h3>
-            <input type="text" id="with-address" placeholder="Destination TON Address">
-            <input type="number" id="with-amount" placeholder="Amount to Withdraw" step="0.1">
-            <button class="action-btn" id="mdl-with-btn" onclick="submitWithdraw()">Request Payout</button>
-        </div>
-    </div>
-
-    <div class="nav-bar">
-        <div class="nav-item active" id="nav-home" onclick="showPage('home')">
-            <div class="nav-icon">⚓</div>
-            <span id="nv-home">Home</span>
-        </div>
-        <div class="nav-item" id="nav-wallet" onclick="showPage('wallet')">
-            <div class="nav-icon">🪙</div>
-            <span id="nv-wallet">Wallet</span>
-        </div>
-        <div class="nav-item" id="nav-settings" onclick="showPage('settings')">
-            <div class="nav-icon">⚙️</div>
-            <span id="nv-settings">Settings</span>
+            <h4 style="margin:0 0 10px 0; color:#f44336;" data-i18n="withdraw_modal_title">📤 Request Profit Withdrawal</h4>
+            <input type="text" class="modal-input" placeholder="UQA..." id="with-address">
+            <input type="number" class="modal-input" placeholder="Withdrawable Amount" id="with-amount">
+            <button class="w-btn withdraw-btn" style="width:100%;" data-i18n="submit_withdraw" onclick="submitWithdraw()">Send Withdrawal Request</button>
+            <button class="w-btn" style="width:100%; background:#445566; margin-top:5px; color:#fff;" data-i18n="cancel" onclick="closeModal('withdraw-modal')">Cancel</button>
         </div>
     </div>
 
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-
-        let coins = 0.000000;
-        let gems = 0;
-        let hashrate = 10;
-        let walletConnected = false;
-        let walletAddress = "";
-        let currentLang = 'en';
+        const API_URL = "https://my-pirate-king.vercel.app";
 
         const translations = {
             en: {
-                title: "🏴‍☠️ My Pirate King",
-                lbl_balance: "Pirate Gold Balance",
-                lbl_gems: "Gems 💎",
-                lbl_hash: "Mining Power ⚔️",
-                spin_btn: "SPIN WHEEL",
-                lbl_status: "Wallet Connection Status",
-                not_connected: "Not Connected",
-                connect_wallet: "Connect TON Wallet",
-                disconnect_wallet: "Disconnect Wallet",
-                btn_dep: "Deposit",
-                btn_with: "Withdraw",
-                lbl_lang_title: "Language / اللغة",
-                nv_home: "Home",
-                nv_wallet: "Wallet",
-                nv_settings: "Settings",
-                invalid_amount: "Please input a valid amount!",
-                cooldown: "Wheel is on cooldown! Try again tomorrow.",
-                wallet_dis: "Wallet Disconnected"
+                dir: "ltr", balance_title: "Your balance of MY PIRATE KING", level_lbl: "Current Level:", mining_status: "Mining automatically...", claim_btn: "Claim Earnings", fleet_title: "⚓ Upgrade Warship Fleet", fleet_desc: "Owning ships gives you massive cumulative mining power.", wheel_title: "Daily Lucky Wheel", wheel_desc: "Available once every 24 hours only! Try your luck to win exclusive rewards.", spin_btn: "Spin Wheel", rewards_title: "🏆 Tasks & Referral System", tasks_group_title: "🏴‍☠️ Novice Pirate Tasks", task_tg: "Subscribe to Telegram Channel", task_x: "Follow our X Account", verify: "Verify", completed: "Completed ✓", ref_title: "🔗 Referral System (Invite Friends)", ref_desc: "Get 50 PIRATE$ and XP rewards for each friend who joins via your link.", ref_btn: "Invite Friends / Copy Link", wallet_title: "Wallet & Swap", wallet_desc: "Convert your mining earnings into real withdrawable crypto.", wallet_dis: "Wallet Disconnected ❌", wallet_con: "Wallet Connected ✅", wallet_avail: "Withdrawable Wallet Balance:", connect_wallet: "🔗 Connect TON Wallet", swap_title: "🔄 Currency Swap", swap_rate_desc: "Every 100,000 PIRATE$ equals 1.00$ USD (Approved TON Price: 1.85$)", from_lbl: "From:", confirm_swap: "Confirm Swap", deposit_lbl: "📥 Deposit TON", withdraw_lbl: "📤 Withdraw Earnings", nav_wallet: "Wallet", nav_rewards: "Rewards", nav_wheel: "Wheel", nav_fleet: "Fleet", nav_mining: "Mining", deposit_modal_title: "📥 Deposit Coins Process", withdraw_modal_title: "📤 Request Profit Withdrawal", cancel: "Cancel", submit_deposit: "Confirm Deposit", submit_withdraw: "Send Withdrawal Request", owned: "Owned ✓", buy: "Buy", invalid_amount: "Please enter a valid amount!", insufficient_bal: "Your balance is insufficient!", swap_success: "Swap executed successfully!", win_ton: "Exceptional luck! You won 0.001 TON!", win_usdt: "Exceptional luck! You won 0.005 USDT!", better_luck: "Better luck next time, Captain! 🏴‍☠️", better_luck_wheel: "Try Again", alert_copied: "Referral link copied & shared!", ship_owned_alert: "You already own this ship!", ship_buy_success: "Congratulations Captain! Purchased ", ship_no_money: "Your balance is insufficient to buy this ship!", task_success: "Verification successful! You got +", cooldown_text: "Available in: ", disconnect_wallet: "❌ Disconnect Wallet"
             },
             ar: {
-                title: "🏴‍☠️ ملك القراصنة",
-                lbl_balance: "رصيد ذهب القراصنة",
-                lbl_gems: "الجواهر 💎",
-                lbl_hash: "قوة التعدين ⚔️",
-                spin_btn: "أدر العجلة",
-                lbl_status: "حالة اتصال المحفظة",
-                not_connected: "غير متصل",
-                connect_wallet: "ربط محفظة TON",
-                disconnect_wallet: "فصل المحفظة",
-                btn_dep: "إيداع",
-                btn_with: "سحب",
-                lbl_lang_title: "Language / اللغة",
-                nv_home: "الرئيسية",
-                nv_wallet: "المحفظة",
-                nv_settings: "الإعدادات",
-                invalid_amount: "يرجى إدخال قيمة صحيحة!",
-                cooldown: "العجلة في وضع الانتظار! حاول غداً.",
-                wallet_dis: "المحفظة غير متصلة"
+                dir: "rtl", balance_title: "رصيدك من عملة MY PIRATE KING", level_lbl: "المستوى الحالي:", mining_status: "جاري التعدين تلقائياً...", claim_btn: "جمع الأرباح (Claim)", fleet_title: "⚓ ترقية أسطول السفن الحربية", fleet_desc: "امتلاك السفن يمنحك قوة تعدين تراكمية خارقة.", wheel_title: "عجلة الحظ اليومية", wheel_desc: "متاحة مرة واحدة كل 24 ساعة فقط! جرب حظك للفوز بمكافآت حصرية.", spin_btn: "تدوير العجلة", rewards_title: "🏆 المهام ونظام الإحالة", tasks_group_title: "🏴‍☠️ مهام القراصنة المبتدئين", task_tg: "الاشتراك بقناة التليجرام", task_x: "متابعة حسابنا على منصة X", verify: "تحقق", completed: "مكتملة ✓", ref_title: "🔗 نظام الإحالة (ادعُ صديقاً)", ref_desc: "احصل على 50 عملة PIRATE$ ومكافأة XP عن كل صديق ينضم عبر رابطك.", ref_btn: "دعوة الأصدقاء / نسخ الرابط", wallet_title: "المحفظة والتبديل المالي", wallet_desc: "حول أرباح التعدين إلى عملات مشفرة حقيقية قابلة للسحب.", wallet_dis: "المحفظة غير متصلة ❌", wallet_con: "المحفظة متصلة ✅", wallet_avail: "رصيد المحفظة الجاهز للسحب:", connect_wallet: "🔗 ربط محفظة TON Wallet", swap_title: "🔄 تبديل العملات (Swap)", swap_rate_desc: "كل 100,000 عملة PIRATE$ تساوي 1.00$ دولار (سعر TON المعتمد: 1.85$)", from_lbl: "من:", confirm_swap: "تأكيد عملية التبديل", deposit_lbl: "📥 إيداع TON", withdraw_lbl: "📤 سحب الأرباح", nav_wallet: "المحفظة", nav_rewards: "الجوائز", nav_wheel: "العجلة", nav_fleet: "الأسطول", nav_mining: "التعدين", deposit_modal_title: "📥 عملية إيداع عملات", withdraw_modal_title: "📤 طلب سحب أرباح", cancel: "إلغاء", submit_deposit: "تأكيد الإيداع", submit_withdraw: "إرسال طلب السحب", owned: "مملوكة ✓", buy: "شراء", invalid_amount: "الرجاء إدخال كمية صحيحة!", insufficient_bal: "رصيدك لا يكفي!", swap_success: "تم التبديل بنجاح!", win_ton: "حظ استثنائي! فزت بـ 0.001 TON!", win_usdt: "حظ استثنائي! فزت بـ 0.005 USDT!", better_luck: "حظاً أوفر كابتن! 🏴‍☠️", better_luck_wheel: "حظ أوفر", alert_copied: "تم نسخ رابط الإحالة ومشاركته!", ship_owned_alert: "تملك هذه السفينة بالفعل!", ship_buy_success: "تهانينا كابتن! تم شراء ", ship_no_money: "رصيدك غير كافٍ لشراء هذه السفينة!", task_success: "تم التوثق بنجاح! حصلت على +", cooldown_text: "متاح بعد: ", disconnect_wallet: "❌ فصل المحفظة"
             }
         };
 
-        function loadGameData() {
+        let currentLang = "en"; 
+        let telegramUserId = "guest";
+        let telegramUsername = "Pirate";
+
+        let mainBalance = 0.00;
+        let currentMined = 0.00;
+        let userXP = 0;
+        let userLevel = 1;
+        let walletConnected = false;
+        let isSpinning = false;
+        let walletUSDT = 0.00;
+        let walletTON = 0.0000;
+        let completedTasks = [0, 0];
+        let lastSpinTime = 0; 
+        let walletAddress = "";
+
+        const baseRatePerSecond = 0.0556; 
+        const tonPriceInUSD = 1.85; 
+
+        const marketShips = [
+            { id: 0, name: "1. Scout Ship", price: 100000, boost: 0.10, desc: "+10% Speed Boost" },
+            { id: 1, name: "2. Bounty Hunter", price: 250000, boost: 0.25, desc: "+25% Speed Boost" },
+            { id: 2, name: "3. Frigate Artillery", price: 500000, boost: 0.55, desc: "+55% Speed Boost" },
+            { id: 3, name: "4. Night Raider", price: 1000000, boost: 1.20, desc: "+120% Speed Boost" },
+            { id: 4, name: "5. Stealth Submarine", price: 2000000, boost: 2.50, desc: "+250% Speed Boost" },
+            { id: 5, name: "6. Storm Bringer", price: 4000000, boost: 5.20, desc: "+520% Speed Boost" },
+            { id: 6, name: "7. Ocean Conqueror", price: 7500000, boost: 10.00, desc: "+1000% Speed Boost" },
+            { id: 7, name: "8. Dreadnought Destroyer", price: 12000000, boost: 17.00, desc: "+1700% Speed Boost" },
+            { id: 8, name: "9. Doom Pearl", price: 20000000, boost: 30.00, desc: "+3000% Speed Boost" },
+            { id: 9, name: "10. Tyrant's Throne", price: 50000000, boost: 80.00, desc: "+8000% Mega Speed Boost" }
+        ];
+
+        let purchasedShips = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+        const prizes = [
+            { text: "10 XP", color: "#2c3e50", action: () => { userXP += 10; checkLevelUp(); } },
+            { text: "5 PIRATE$", color: "#1a5276", action: () => { mainBalance += 5; } },
+            { text: "0.001 TON", color: "#117a65", isCrypto: true, action: () => { walletTON += 0.001; alert(translations[currentLang].win_ton); } },
+            { text: "20 XP", color: "#6c3483", action: () => { userXP += 20; checkLevelUp(); } },
+            { text: "0.005 USDT", color: "#78281f", isCrypto: true, action: () => { walletUSDT += 0.005; alert(translations[currentLang].win_usdt); } },
+            { text: "better_luck_wheel", color: "#515a5a", isKey: true, action: () => { alert(translations[currentLang].better_luck); } }
+        ];
+
+        async function saveGameDataToServer() {
+            if (telegramUserId === "guest") return; 
             try {
-                tg.CloudStorage.getItem('pirate_game_state', (err, value) => {
-                    if (!err && value) {
-                        const data = JSON.parse(value);
-                        coins = parseFloat(data.coins) || 0;
-                        gems = parseInt(data.gems) || 0;
-                        hashrate = parseInt(data.hashrate) || 10;
-                        currentLang = data.lang || 'en';
-                        setLanguage(currentLang);
-                        updateDisplay();
-                    }
+                await fetch(`${API_URL}/api/save-game`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        telegramId: telegramUserId,
+                        username: telegramUsername,
+                        walletAddress: walletAddress,
+                        mainBalance: mainBalance,
+                        userLevel: userLevel,
+                        userXP: userXP
+                    })
                 });
-            } catch(e) { console.log(e); }
+                console.log("🏴‍☠️ Cloud Synced Success!");
+            } catch (err) {
+                console.error("Cloud Save Failed:", err);
+            }
         }
 
-        function saveGameDataToServer() {
+        async function loadGameDataFromServer() {
+            if (telegramUserId === "guest") return;
             try {
-                const state = JSON.stringify({ coins, gems, hashrate, lang: currentLang });
-                tg.CloudStorage.setItem('pirate_game_state', state);
-            } catch(e) { console.log(e); }
+                const response = await fetch(`${API_URL}/api/save-game`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ telegramId: telegramUserId, username: telegramUsername })
+                });
+                const resData = await response.json();
+                if (resData.success && resData.data) {
+                    const cloudData = resData.data;
+                    mainBalance = cloudData.mainBalance ?? 0;
+                    userLevel = cloudData.userLevel ?? 1;
+                    userXP = cloudData.userXP ?? 0;
+                    walletAddress = cloudData.walletAddress ?? "";
+                    if (walletAddress) walletConnected = true;
+                    updateDisplay();
+                    renderFleetStore();
+                    renderTasks();
+                    console.log("🏴‍☠️ Player Loaded from MongoDB Securely!");
+                }
+            } catch (err) {
+                console.error("Cloud Load Failed:", err);
+            }
         }
 
-        function setLanguage(lang) {
-            currentLang = lang;
-            document.getElementById('app-header-title').innerText = translations[lang].title;
-            document.getElementById('lbl-balance').innerText = translations[lang].lbl_balance;
-            document.getElementById('lbl-gems').innerText = translations[lang].lbl_gems;
-            document.getElementById('lbl-hash').innerText = translations[lang].lbl_hash;
-            document.getElementById('spin-btn').innerText = translations[lang].spin_btn;
-            document.getElementById('lbl-status').innerText = translations[lang].lbl_status;
-            document.getElementById('btn-dep').innerText = translations[lang].btn_dep;
-            document.getElementById('btn-with').innerText = translations[lang].btn_with;
-            document.getElementById('lbl-lang-title').innerText = translations[lang].lbl_lang_title;
-            document.getElementById('nv-home').innerText = translations[lang].nv_home;
-            document.getElementById('nv-wallet').innerText = translations[lang].nv_wallet;
-            document.getElementById('nv-settings').innerText = translations[lang].nv_settings;
+        function initLanguage() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                Telegram.WebApp.ready();
+                Telegram.WebApp.expand();
+                telegramUserId = Telegram.WebApp.initDataUnsafe?.user?.id?.toString() || "guest";
+                telegramUsername = Telegram.WebApp.initDataUnsafe?.user?.username || "Pirate";
+                
+                const tgLang = Telegram.WebApp.initDataUnsafe?.user?.language_code;
+                if (tgLang && translations[tgLang]) { currentLang = tgLang; }
+            }
+
+            document.documentElement.lang = currentLang;
+            document.body.dir = translations[currentLang].dir;
+
+            document.querySelectorAll("[data-i18n]").forEach(element => {
+                const key = element.getAttribute("data-i18n");
+                if (translations[currentLang][key]) { element.innerText = translations[currentLang][key]; }
+            });
+        }
+
+        function shareReferralLink() {
+            const botUsername = "MyPirateKing_bot"; 
+            const refLink = `https://t.me/${botUsername}?start=ref_${telegramUserId}`;
+            if (window.Telegram && window.Telegram.WebApp) {
+                const text = currentLang === "ar" ? "انضم إلى أسطول القراصنة الخاص بي وقم بتعدين العملات مجاناً! 🏴‍☠️" : "Join my pirate crew crew and mine PIRATE$ coins for free! 🏴‍☠️";
+                Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(text)}`);
+            } else {
+                navigator.clipboard.writeText(refLink).then(() => { alert(translations[currentLang].alert_copied); });
+            }
+        }
+
+        function calculateTotalBoost() {
+            let totalBoost = 0;
+            for(let i=0; i<purchasedShips.length; i++) {
+                if(purchasedShips[i] === 1) totalBoost += marketShips[i].boost;
+            }
+            return totalBoost;
+        }
+
+        document.addEventListener("DOMContentLoaded", async function() {
+            initLanguage();
+            await loadGameDataFromServer(); 
+            renderFleetStore();
+            renderTasks();
+            drawWheel();
             updateDisplay();
+            checkWheelCooldown();
+
+            setInterval(() => {
+                let currentRate = baseRatePerSecond * (1 + calculateTotalBoost());
+                currentMined += currentRate;
+                document.getElementById('live-mined').innerText = currentMined.toFixed(2);
+            }, 1000);
+
+            setInterval(checkWheelCooldown, 1000);
+
+            const navItems = document.querySelectorAll('.nav-bar .nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const pageId = this.getAttribute('data-page');
+                    document.querySelectorAll('.page-section').forEach(sec => sec.classList.remove('active'));
+                    document.getElementById(pageId).classList.add('active');
+                    navItems.forEach(i => i.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        });
+
+        function checkWheelCooldown() {
+            const btn = document.getElementById('spinBtn');
+            if (!btn || isSpinning) return;
+            const now = Date.now();
+            const cooldown = 24 * 60 * 60 * 1000; 
+            const timePassed = now - lastSpinTime;
+            if (timePassed < cooldown) {
+                const timeLeft = cooldown - timePassed;
+                const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                btn.innerText = `${translations[currentLang].cooldown_text}${hours}h ${minutes}m ${seconds}s`;
+                btn.classList.add('disabled');
+                btn.disabled = true;
+            } else {
+                btn.innerText = translations[currentLang].spin_btn;
+                btn.classList.remove('disabled');
+                btn.disabled = false;
+            }
+        }
+
+        function spawnFloatingMoney(event) {
+            const circle = document.getElementById('mining-circle');
+            const rect = circle.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            const floatingText = document.createElement('div');
+            floatingText.className = 'floating-text';
+            floatingText.innerText = '+1';
+            floatingText.style.left = `${x}px`;
+            floatingText.style.top = `${y}px`;
+            circle.appendChild(floatingText);
+            setTimeout(() => { floatingText.remove(); }, 800);
+        }
+
+        function claimEarnings() {
+            if (currentMined > 0) {
+                mainBalance += currentMined;
+                currentMined = 0.00;
+                updateDisplay();
+                saveGameDataToServer(); 
+            }
+        }
+
+        function renderTasks() {
+            for(let i=0; i<completedTasks.length; i++) {
+                if(completedTasks[i] === 1) {
+                    const taskBox = document.getElementById(`task-${i}`);
+                    if(taskBox) {
+                        const btn = taskBox.querySelector('button');
+                        btn.innerText = translations[currentLang].completed;
+                        btn.classList.add('disabled');
+                        btn.removeAttribute('onclick');
+                    }
+                }
+            }
+        }
+
+        function completeTask(id, reward) {
+            if(completedTasks[id] === 1) return;
+            completedTasks[id] = 1;
+            mainBalance += reward;
+            renderTasks();
+            updateDisplay();
+            saveGameDataToServer();
+            alert(`${translations[currentLang].task_success}${reward.toLocaleString()}! 🏴‍☠️`);
+        }
+
+        function renderFleetStore() {
+            const container = document.getElementById('fleet-list');
+            if(!container) return;
+            container.innerHTML = "";
+            marketShips.forEach(ship => {
+                const isOwned = purchasedShips[ship.id] === 1;
+                const card = document.createElement('div');
+                card.className = `ship-card ${isOwned ? 'owned' : ''}`;
+                card.innerHTML = `
+                    <div class="ship-info">
+                        <h4>${ship.name}</h4>
+                        <p>${ship.desc} | Price: <span style="color:var(--primary-color)">${ship.price.toLocaleString()} PIRATE$</span></p>
+                    </div>
+                    <div>
+                        <button class="spin-btn ${isOwned ? 'disabled' : ''}" onclick="buySpecificShip(${ship.id})">
+                            ${isOwned ? translations[currentLang].owned : translations[currentLang].buy}
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function buySpecificShip(id) {
+            if (purchasedShips[id] === 1) return alert(translations[currentLang].ship_owned_alert);
+            const ship = marketShips[id];
+            if (mainBalance >= ship.price) {
+                mainBalance -= ship.price;
+                purchasedShips[id] = 1;
+                renderFleetStore();
+                updateDisplay();
+                saveGameDataToServer();
+                alert(`${translations[currentLang].ship_buy_success}${ship.name}.`);
+            } else {
+                alert(translations[currentLang].ship_no_money);
+            }
         }
 
         function updateDisplay() {
-            document.getElementById('coins-display').innerText = coins.toFixed(6);
-            document.getElementById('gems-display').innerText = gems;
-            document.getElementById('hashrate-display').innerText = hashrate + " H/s";
+            document.getElementById('main-balance').innerText = mainBalance.toFixed(2);
+            document.getElementById('crypto-balance-usdt').innerText = walletUSDT.toFixed(2);
+            document.getElementById('crypto-balance-ton').innerText = walletTON.toFixed(4);
+            document.getElementById('user-xp').innerText = userXP;
+            document.getElementById('user-level').innerText = userLevel;
+            let currentRate = baseRatePerSecond * (1 + calculateTotalBoost());
+            document.getElementById('rate-display').innerText = `+${currentRate.toFixed(4)}/${currentLang === 'ar' ? 'ثانية' : 's'}`;
             
             const display = document.getElementById('wallet-address-display');
             const btn = document.getElementById('connectWalletBtn');
-            
             if (walletConnected && walletAddress) {
                 const shortAddress = walletAddress.slice(0, 4) + "..." + walletAddress.slice(-4);
                 display.innerText = `${shortAddress} ✅`;
@@ -401,91 +769,82 @@
             }
         }
 
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('page-' + pageId).classList.add('active');
-            document.getElementById('nav-' + pageId).classList.add('active');
+        function calculateSwap() {
+            const inputAmount = parseFloat(document.getElementById('swap-input-amount').value);
+            const targetCurrency = document.getElementById('swap-target-currency').value;
+            const outputField = document.getElementById('swap-output-amount');
+            if (isNaN(inputAmount) || inputAmount <= 0) { outputField.value = ""; return; }
+            let valueInUSD = inputAmount / 100000;
+            if (targetCurrency === "USDT") outputField.value = `${valueInUSD.toFixed(4)} $`;
+            else if (targetCurrency === "TON") outputField.value = `${(valueInUSD / tonPriceInUSD).toFixed(6)} 💎`;
         }
 
-        setInterval(() => {
-            coins += (hashrate * 0.000001);
-            updateDisplay();
-        }, 1000);
-
-        setInterval(() => {
+        function executeSwap() {
+            const inputAmount = parseFloat(document.getElementById('swap-input-amount').value);
+            const targetCurrency = document.getElementById('swap-target-currency').value;
+            if (isNaN(inputAmount) || inputAmount <= 0) return alert(translations[currentLang].invalid_amount);
+            if (mainBalance < inputAmount) return alert(translations[currentLang].insufficient_bal);
+            mainBalance -= inputAmount;
+            let valueInUSD = inputAmount / 100000;
+            if (targetCurrency === "USDT") { walletUSDT += valueInUSD; }
+            else if (targetCurrency === "TON") { walletTON += (valueInUSD / tonPriceInUSD); }
+            document.getElementById('swap-input-amount').value = "";
+            document.getElementById('swap-output-amount').value = "";
+            updateDisplay(); 
             saveGameDataToServer();
-        }, 10000);
+            alert(translations[currentLang].swap_success);
+        }
 
-        const canvas = document.getElementById('wheel');
-        const ctx = canvas.getContext('2d');
-        const prizes = [
-            { text: "+0.05 Gold", action: () => { coins += 0.05; } },
-            { text: "+1💎", action: () => { gems += 1; } },
-            { text: "+5 H/s", action: () => { hashrate += 5; } },
-            { text: "Jackpot 💎x10", action: () => { gems += 10; } },
-            { text: "No Luck", action: () => {} },
-            { text: "+0.10 Gold", action: () => { coins += 0.10; } }
-        ];
+        function checkLevelUp() {
+            let nextLevelXP = userLevel * 150; 
+            if (userXP >= nextLevelXP) { 
+                userXP -= nextLevelXP; 
+                userLevel++; 
+                updateDisplay(); 
+                saveGameDataToServer(); 
+            }
+        }
 
         function drawWheel() {
-            const numSegments = prizes.length;
-            const angle = (2 * Math.PI) / numSegments;
-            for (let i = 0; i < numSegments; i++) {
-                ctx.beginPath();
-                ctx.moveTo(140, 140);
-                ctx.arc(140, 140, 135, i * angle, (i + 1) * angle);
-                ctx.fillStyle = i % 2 === 0 ? '#1f2833' : '#ffc107';
-                ctx.fill();
-                ctx.stroke();
-                ctx.save();
-                ctx.translate(140, 140);
-                ctx.rotate(i * angle + angle / 2);
-                ctx.fillStyle = i % 2 === 0 ? '#fff' : '#000';
-                ctx.font = "bold 11px Arial";
-                ctx.fillText(prizes[i].text, 50, 5);
-                ctx.restore();
+            const canvas = document.getElementById('wheelCanvas'); if(!canvas) return;
+            const ctx = canvas.getContext('2d'); const radius = canvas.width / 2;
+            const sliceAngle = (2 * Math.PI) / prizes.length;
+            for (let i = 0; i < prizes.length; i++) {
+                ctx.beginPath(); ctx.fillStyle = prizes[i].color; ctx.moveTo(radius, radius);
+                ctx.arc(radius, radius, radius, i * sliceAngle, (i + 1) * sliceAngle); ctx.fill();
+                ctx.save(); ctx.translate(radius, radius); ctx.rotate(i * sliceAngle + sliceAngle / 2);
+                ctx.fillStyle = "#fff"; ctx.font = "bold 11px Arial";
+                let text = prizes[i].text;
+                if(prizes[i].isKey) { text = translations[currentLang][prizes[i].text]; }
+                ctx.fillText(text, radius - 65, 5); ctx.restore();
             }
-        }
-        drawWheel();
-
-        let isSpinning = false;
-        let lastSpinTime = 0;
-
-        function checkWheelCooldown() {
-            const now = Date.now();
-            if (now - lastSpinTime < 24 * 60 * 60 * 1000) {
-                return false;
-            }
-            return true;
         }
 
         function spinWheel() {
-            if (isSpinning) return;
-            if (!checkWheelCooldown()) {
-                alert(translations[currentLang].cooldown);
-                return;
-            }
+            const now = Date.now();
+            if (isSpinning || (now - lastSpinTime < 24 * 60 * 60 * 1000)) return; 
             isSpinning = true;
-            const wheel = document.getElementById('wheel');
+            lastSpinTime = now; 
+            checkWheelCooldown();
+            const wheel = document.getElementById('wheel'); 
             const prizeIndex = Math.floor(Math.random() * prizes.length);
+            const sliceAngle = 360 / prizes.length;
             const totalSpins = 5;
-            const targetDegrees = (totalSpins * 360) + (360 - (prizeIndex * 60) - 30);
-            wheel.style.transition = "transform 4s cubic-bezier(0.1, 0.8, 0.3, 1)";
+            const targetDegrees = (totalSpins * 360) + (360 - (prizeIndex * sliceAngle)) - (sliceAngle / 2);
             wheel.style.transform = `rotate(${targetDegrees}deg)`;
-            
             setTimeout(() => {
                 prizes[prizeIndex].action();
-                document.getElementById('wheel-result').innerText = prizes[prizeIndex].text;
+                let resultText = prizes[prizeIndex].text;
+                if(prizes[prizeIndex].isKey) { resultText = translations[currentLang][prizes[prizeIndex].text]; }
+                document.getElementById('wheel-result').innerText = resultText;
                 isSpinning = false;
-                lastSpinTime = Date.now();
                 updateDisplay();
                 saveGameDataToServer();
             }, 4000);
         }
 
         function openModal(id) { document.getElementById(id).classList.add('active'); }
-        function closeModal(id) { document.getElementById(id).remove('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         
         function submitDeposit() {
             const amt = document.getElementById('dep-amount').value;
@@ -502,11 +861,13 @@
             closeModal('withdraw-modal');
         }
         
+        // تهيئة أداة TON Connect الحقيقية بالرابط والمستودع الخاص بك لفك تجميد الزر
         const tonConnectUI = new tonconnectui.TonConnectUI({
             manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json', 
             buttonRootId: 'connectWalletBtn'
         });
 
+        // مراقبة الاتصال الحقيقي وحفظ السحاب التلقائي
         tonConnectUI.onStatusChange(wallet => {
             if (wallet) {
                 walletConnected = true;
@@ -519,6 +880,7 @@
             saveGameDataToServer();
         });
 
+        // دالة الزر لفتح نافذة الاتصال الحقيقية بالـ TON Connect المحترفة
         async function toggleWalletConnect() {
             if (tonConnectUI.connected) {
                 await tonConnectUI.disconnect();
@@ -526,8 +888,6 @@
                 await tonConnectUI.openModal();
             }
         }
-
-        window.onload = loadGameData;
     </script>
 </body>
 </html>
