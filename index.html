@@ -862,15 +862,32 @@
             closeModal('withdraw-modal');
         }
         
-        function toggleWalletConnect() {
-            walletConnected = !walletConnected;
-            if(walletConnected) {
-                walletAddress = "UQ_PirateKing_UserWallet_Connected_Example";
+        // 1. إعداد أداة TON Connect للشبكة الحقيقية
+        const tonConnectUI = new tonconnectui.TonConnectUI({
+            manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json', 
+            buttonRootId: 'connectWalletBtn'
+        });
+
+        // 2. تتبع حالة المحفظة الحقيقية تلقائياً وتحديث اللعبة
+        tonConnectUI.onStatusChange(wallet => {
+            if (wallet) {
+                walletConnected = true;
+                walletAddress = wallet.account.address; 
             } else {
+                walletConnected = false;
                 walletAddress = "";
             }
             updateDisplay();
             saveGameDataToServer();
+        });
+
+        // 3. الدالة الحقيقية للتحكم بالزر عند الضغط
+        async function toggleWalletConnect() {
+            if (tonConnectUI.connected) {
+                await tonConnectUI.disconnect();
+            } else {
+                await tonConnectUI.openModal();
+            }
         }
     </script>
 </body>
