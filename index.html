@@ -406,7 +406,7 @@
                 </div>
             </div>
             
-            <div id="connectWalletBtn" style="display: flex; justify-content: center; margin: 15px auto; width: 90%;"></div>
+            <button class="claim-btn" id="connectWalletBtn" onclick="connectTonWalletManual()" style="background: linear-gradient(180deg, #0088cc, #007aff); color: white; box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3); width: 90%; margin: 15px auto;">🔗 Connect TON Wallet</button>
             
             <div class="swap-box">
                 <h4 style="margin:0 0 5px 0; color:var(--primary-color);" data-i18n="swap_title">🔄 Currency Swap</h4>
@@ -748,7 +748,6 @@
             }
         }
 
-        // اللمسة السحرية: تحديث العرض العلوي للمحفظة فقط وترك الزر الذكي يتحكم بنفسه تلقائياً
         function updateDisplay() {
             document.getElementById('main-balance').innerText = mainBalance.toFixed(2);
             document.getElementById('crypto-balance-usdt').innerText = walletUSDT.toFixed(2);
@@ -844,7 +843,6 @@
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         
-        // اللمسة السحرية: جعل دالة الإيداع حقيقية وتفتح المحفظة لخصم عملات TON وإرسالها لك
         async function submitDeposit() {
             const amt = document.getElementById('dep-amount').value;
             if(!amt || amt <= 0) return alert(translations[currentLang].invalid_amount);
@@ -854,14 +852,13 @@
                 return;
             }
 
-            // تحويل القيمة المدخلة إلى وحدة النانوتون المصغرة (Nanotons)
             const nanoAmount = (parseFloat(amt) * 1000000000).toString();
 
             const transaction = {
-                validUntil: Math.floor(Date.now() / 1000) + 600, // صالح لمدة 10 دقائق
+                validUntil: Math.floor(Date.now() / 1000) + 600, 
                 messages: [
                     {
-                        address: "ضع_هنا_عنوان_محفظة_مشروعك_الرئيسية", // اإستبدل هذا النص بنص عنوان محفظتك لاستلام أموال اللاعبين
+                        address: "ضع_هنا_عنوان_محفظة_مشروعك_الرئيسية", // استبدل هذا بالنص الحقيقي لمحفظتك
                         amount: nanoAmount,
                         payload: "" 
                     }
@@ -875,7 +872,6 @@
                 alert(currentLang === 'ar' ? "تم الإيداع بنجاح! جاري شحن رصيدك..." : "Deposit successful! Charging your balance...");
                 closeModal('deposit-modal');
                 
-                // مكافأة اللاعب تلقائياً بعد الدفع (مثال: كل 1 تون يمنحه 100,000 عملة في اللعبة)
                 mainBalance += (parseFloat(amt) * 100000);
                 updateDisplay();
                 saveGameDataToServer();
@@ -893,20 +889,37 @@
             closeModal('withdraw-modal');
         }
         
-        // تهيئة أداة TON Connect الحقيقية بالمانيفست الخاص بك لربط المحافظ بشكل آمن
+        // لمسة الذيل السحرية: تهيئة سريعة يديرها نظام تحكم قسري يدوي
         const tonConnectUI = new tonconnectui.TonConnectUI({
-            manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json', 
-            buttonRootId: 'connectWalletBtn'
+            manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
         });
 
-        // مراقبة حالة الاتصال وتحديث البيانات تلقائياً دون أي تدخل بشري
+        async function connectTonWalletManual() {
+            try {
+                if (tonConnectUI.connected) {
+                    await tonConnectUI.disconnect();
+                    walletConnected = false;
+                    walletAddress = "";
+                    alert(currentLang === 'ar' ? "تم فصل المحفظة." : "Wallet disconnected.");
+                } else {
+                    alert(currentLang === 'ar' ? "جاري فتح قائمة المحافظ الاستثمارية..." : "Opening wallet list...");
+                    await tonConnectUI.openModal();
+                }
+            } catch (error) {
+                console.error("Manual Connection Error:", error);
+            }
+        }
+
         tonConnectUI.onStatusChange(wallet => {
+            const btn = document.getElementById('connectWalletBtn');
             if (wallet) {
                 walletConnected = true;
-                walletAddress = wallet.account.address; 
+                walletAddress = wallet.account.address;
+                if(btn) btn.innerText = currentLang === 'ar' ? "❌ فصل المحفظة" : "❌ Disconnect Wallet";
             } else {
                 walletConnected = false;
                 walletAddress = "";
+                if(btn) btn.innerText = currentLang === 'ar' ? "🔗 ربط محفظة TON Wallet" : "🔗 Connect TON Wallet";
             }
             updateDisplay();
             saveGameDataToServer();
