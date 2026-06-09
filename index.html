@@ -475,6 +475,9 @@
     <script>
         const API_URL = "https://my-pirate-king.vercel.app";
 
+        // حجز المتغير العام للمحفظة في البيئة الشاملة لتجنب خطأ التجميد الأبدي
+        window.tonConnectUI = null;
+
         const translations = {
             en: {
                 dir: "ltr", balance_title: "Your balance of MY PIRATE KING", level_lbl: "Current Level:", mining_status: "Mining automatically...", claim_btn: "Claim Earnings", fleet_title: "⚓ Upgrade Warship Fleet", fleet_desc: "Owning ships gives you massive cumulative mining power.", wheel_title: "Daily Lucky Wheel", wheel_desc: "Available once every 24 hours only! Try your luck to win exclusive rewards.", spin_btn: "Spin Wheel", rewards_title: "🏆 Tasks & Referral System", tasks_group_title: "🏴‍☠️ Novice Pirate Tasks", task_tg: "Subscribe to Telegram Channel", task_x: "Follow our X Account", verify: "Verify", completed: "Completed ✓", ref_title: "🔗 Referral System (Invite Friends)", ref_desc: "Get 50 PIRATE$ and XP rewards for each friend who joins via your link.", ref_btn: "Invite Friends / Copy Link", wallet_title: "Wallet & Swap", wallet_desc: "Convert your mining earnings into real withdrawable crypto.", wallet_dis: "Wallet Disconnected ❌", wallet_con: "Wallet Connected ✅", wallet_avail: "Withdrawable Wallet Balance:", connect_wallet: "🔗 Connect TON Wallet", swap_title: "🔄 Currency Swap", swap_rate_desc: "Every 100,000 PIRATE$ equals 1.00$ USD (Approved TON Price: 1.85$)", from_lbl: "From:", confirm_swap: "Confirm Swap", deposit_lbl: "📥 Deposit TON", withdraw_lbl: "📤 Withdraw Earnings", nav_wallet: "Wallet", nav_rewards: "Rewards", nav_wheel: "Wheel", nav_fleet: "Fleet", nav_mining: "Mining", deposit_modal_title: "📥 Deposit Coins Process", withdraw_modal_title: "📤 Request Profit Withdrawal", cancel: "Cancel", submit_deposit: "Confirm Deposit", submit_withdraw: "Send Withdrawal Request", owned: "Owned ✓", buy: "Buy", invalid_amount: "Please enter a valid amount!", insufficient_bal: "Your balance is insufficient!", swap_success: "Swap executed successfully!", win_ton: "Exceptional luck! You won 0.001 TON!", win_usdt: "Exceptional luck! You won 0.005 USDT!", better_luck: "Better luck next time, Captain! 🏴‍☠️", better_luck_wheel: "Try Again", alert_copied: "Referral link copied & shared!", ship_owned_alert: "You already own this ship!", ship_buy_success: "Congratulations Captain! Purchased ", ship_no_money: "Your balance is insufficient to buy this ship!", task_success: "Verification successful! You got +", cooldown_text: "Available in: "
@@ -613,8 +616,47 @@
             return totalBoost;
         }
 
+        // ==========================================
+        // ✨ لمسة الذيل السحرية المحصنة والمحدثة عولمياً ✨
+        // ==========================================
         document.addEventListener("DOMContentLoaded", async function() {
             initLanguage();
+
+            // إجبار التهيئة على الحدوث فور التأكد من جاهزية شجرة العناصر (DOM) والمكتبة الخارجية
+            try {
+                if (typeof TONConnectUI !== 'undefined') {
+                    window.tonConnectUI = new TONConnectUI.TonConnectUI({
+                        manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
+                    });
+                } else if (typeof tonconnectui !== 'undefined') {
+                    window.tonConnectUI = new tonconnectui.TonConnectUI({
+                        manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
+                    });
+                } else {
+                    console.error("⚓ TON Connect Library NOT FOUND inside DOM Context!");
+                }
+            } catch (e) {
+                console.error("Critical Runtime Init Error:", e);
+            }
+
+            // تفعيل مستمع تغيير الحالة تلقائياً بعد الحجز
+            if (window.tonConnectUI) {
+                window.tonConnectUI.onStatusChange(wallet => {
+                    const btn = document.getElementById('connectWalletBtn');
+                    if (wallet) {
+                        walletConnected = true;
+                        walletAddress = wallet.account.address;
+                        if(btn) btn.innerText = currentLang === 'ar' ? "❌ فصل المحفظة" : "❌ Disconnect Wallet";
+                    } else {
+                        walletConnected = false;
+                        walletAddress = "";
+                        if(btn) btn.innerText = currentLang === 'ar' ? "🔗 ربط محفظة TON Wallet" : "🔗 Connect TON Wallet";
+                    }
+                    updateDisplay();
+                    saveGameDataToServer();
+                });
+            }
+
             await loadGameDataFromServer(); 
             renderFleetStore();
             renderTasks();
@@ -847,7 +889,7 @@
             const amt = document.getElementById('dep-amount').value;
             if(!amt || amt <= 0) return alert(translations[currentLang].invalid_amount);
             
-            if (!tonConnectUI || !tonConnectUI.connected) {
+            if (!window.tonConnectUI || !window.tonConnectUI.connected) {
                 alert(currentLang === 'ar' ? "يرجى ربط محفظتك أولاً عبر الزر الرئيسي!" : "Please connect your wallet first via the main button!");
                 return;
             }
@@ -867,7 +909,7 @@
 
             try {
                 alert(currentLang === 'ar' ? "جاري فتح محفظتك لتأكيد عملية الدفع..." : "Opening your wallet to confirm the payment...");
-                const result = await tonConnectUI.sendTransaction(transaction);
+                const result = await window.tonConnectUI.sendTransaction(transaction);
                 
                 alert(currentLang === 'ar' ? "تم الإيداع بنجاح! جاري شحن رصيدك..." : "Deposit successful! Charging your balance...");
                 closeModal('deposit-modal');
@@ -888,68 +930,32 @@
             alert(currentLang === 'ar' ? "تم إرسال طلب السحب للمراجعة الفنية!" : "Withdrawal request sent for technical review!");
             closeModal('withdraw-modal');
         }
-        
-        // ==========================================
-        // ✨ لمسة الذيل السحرية المحصنة والمحدثة ✨
-        // ==========================================
-        let tonConnectUI;
 
-        try {
-            // الفحص الذكي: تحديد الصيغة الصحيحة للمكتبة حسب نوع الهاتف ومتصفح التليجرام
-            if (typeof TONConnectUI !== 'undefined') {
-                tonConnectUI = new TONConnectUI.TonConnectUI({
-                    manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
-                });
-            } else if (typeof tonconnectui !== 'undefined') {
-                tonConnectUI = new tonconnectui.TonConnectUI({
-                    manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
-                });
-            } else {
-                console.error("⚓ TON Connect Library NOT FOUND in Global Scope!");
-            }
-        } catch (e) {
-            console.error("Initialization Critical Error:", e);
-        }
-
-        // دالة الربط القسرية المعدلة والمحمية بنظام فحص الأخطاء
+        // دالة الربط القسرية العالمية والمحمية بالكامل
         async function connectTonWalletManual() {
             try {
-                if (!tonConnectUI) {
-                    alert(currentLang === 'ar' ? "خطأ: لم يتم تحميل مكتبة المحفظة بعد، أعد المحاولة!" : "Error: Wallet library not loaded yet, retry!");
+                if (!window.tonConnectUI) {
+                    alert(currentLang === 'ar' ? "خطأ تقني: جاري تحديث اتصال المكتبة، اضغط مجدداً خلال ثانيتين!" : "Error: Re-linking library, click again in 2 seconds!");
+                    
+                    // محاولة إنقاذ أخيرة وفورية لإعادة بناء الكائن إن سقط من الذاكرة
+                    if (typeof TONConnectUI !== 'undefined') window.tonConnectUI = new TONConnectUI.TonConnectUI({ manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json' });
+                    else if (typeof tonconnectui !== 'undefined') window.tonConnectUI = new tonconnectui.TonConnectUI({ manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json' });
                     return;
                 }
 
-                if (tonConnectUI.connected) {
-                    await tonConnectUI.disconnect();
+                if (window.tonConnectUI.connected) {
+                    await window.tonConnectUI.disconnect();
                     walletConnected = false;
                     walletAddress = "";
                     alert(currentLang === 'ar' ? "تم فصل المحفظة بنجاح." : "Wallet disconnected.");
                 } else {
-                    // فتح قائمة المحافظ قسرياً برمجياً دون جمود
-                    await tonConnectUI.openModal();
+                    // إطلاق نافذة المحافظ بدون أي جمود
+                    await window.tonConnectUI.openModal();
                 }
             } catch (error) {
                 console.error("Manual Connection Error:", error);
-                alert(currentLang === 'ar' ? "فشل فتح المحفظة، يرجى إعادة تحديث الصفحة." : "Failed to open wallet, please reload page.");
+                alert(currentLang === 'ar' ? "فشل فتح المحفظة، يرجى سحب الصفحة للأسفل لتحديثها." : "Failed to open wallet, please pull down to reload.");
             }
-        }
-
-        // مراقبة حالة الاتصال وتحديث النصوص تلقائياً بدون تعليق
-        if (tonConnectUI) {
-            tonConnectUI.onStatusChange(wallet => {
-                const btn = document.getElementById('connectWalletBtn');
-                if (wallet) {
-                    walletConnected = true;
-                    walletAddress = wallet.account.address;
-                    if(btn) btn.innerText = currentLang === 'ar' ? "❌ فصل المحفظة" : "❌ Disconnect Wallet";
-                } else {
-                    walletConnected = false;
-                    walletAddress = "";
-                    if(btn) btn.innerText = currentLang === 'ar' ? "🔗 ربط محفظة TON Wallet" : "🔗 Connect TON Wallet";
-                }
-                updateDisplay();
-                saveGameDataToServer();
-            });
         }
     </script>
 </body>
