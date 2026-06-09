@@ -277,7 +277,6 @@
         .w-btn { padding: 12px; border: none; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; }
         .deposit-btn { background: #4caf50; color: white; }
         .withdraw-btn { background: #f44336; color: white; }
-        .connect-wallet-btn { background: #007aff; color: white; width: 100%; }
 
         .modal {
             display: none; position: fixed;
@@ -406,7 +405,8 @@
                     💎 <span id="crypto-balance-ton" style="color:#007aff; font-weight:bold;">0.0000</span> TON
                 </div>
             </div>
-            <button class="w-btn connect-wallet-btn" id="connectWalletBtn" data-i18n="connect_wallet" onclick="toggleWalletConnect()">🔗 Connect TON Wallet</button>
+            
+            <div id="connectWalletBtn" style="display: flex; justify-content: center; margin: 15px auto; width: 90%;"></div>
             
             <div class="swap-box">
                 <h4 style="margin:0 0 5px 0; color:var(--primary-color);" data-i18n="swap_title">🔄 Currency Swap</h4>
@@ -477,10 +477,10 @@
 
         const translations = {
             en: {
-                dir: "ltr", balance_title: "Your balance of MY PIRATE KING", level_lbl: "Current Level:", mining_status: "Mining automatically...", claim_btn: "Claim Earnings", fleet_title: "⚓ Upgrade Warship Fleet", fleet_desc: "Owning ships gives you massive cumulative mining power.", wheel_title: "Daily Lucky Wheel", wheel_desc: "Available once every 24 hours only! Try your luck to win exclusive rewards.", spin_btn: "Spin Wheel", rewards_title: "🏆 Tasks & Referral System", tasks_group_title: "🏴‍☠️ Novice Pirate Tasks", task_tg: "Subscribe to Telegram Channel", task_x: "Follow our X Account", verify: "Verify", completed: "Completed ✓", ref_title: "🔗 Referral System (Invite Friends)", ref_desc: "Get 50 PIRATE$ and XP rewards for each friend who joins via your link.", ref_btn: "Invite Friends / Copy Link", wallet_title: "Wallet & Swap", wallet_desc: "Convert your mining earnings into real withdrawable crypto.", wallet_dis: "Wallet Disconnected ❌", wallet_con: "Wallet Connected ✅", wallet_avail: "Withdrawable Wallet Balance:", connect_wallet: "🔗 Connect TON Wallet", swap_title: "🔄 Currency Swap", swap_rate_desc: "Every 100,000 PIRATE$ equals 1.00$ USD (Approved TON Price: 1.85$)", from_lbl: "From:", confirm_swap: "Confirm Swap", deposit_lbl: "📥 Deposit TON", withdraw_lbl: "📤 Withdraw Earnings", nav_wallet: "Wallet", nav_rewards: "Rewards", nav_wheel: "Wheel", nav_fleet: "Fleet", nav_mining: "Mining", deposit_modal_title: "📥 Deposit Coins Process", withdraw_modal_title: "📤 Request Profit Withdrawal", cancel: "Cancel", submit_deposit: "Confirm Deposit", submit_withdraw: "Send Withdrawal Request", owned: "Owned ✓", buy: "Buy", invalid_amount: "Please enter a valid amount!", insufficient_bal: "Your balance is insufficient!", swap_success: "Swap executed successfully!", win_ton: "Exceptional luck! You won 0.001 TON!", win_usdt: "Exceptional luck! You won 0.005 USDT!", better_luck: "Better luck next time, Captain! 🏴‍☠️", better_luck_wheel: "Try Again", alert_copied: "Referral link copied & shared!", ship_owned_alert: "You already own this ship!", ship_buy_success: "Congratulations Captain! Purchased ", ship_no_money: "Your balance is insufficient to buy this ship!", task_success: "Verification successful! You got +", cooldown_text: "Available in: ", disconnect_wallet: "❌ Disconnect Wallet"
+                dir: "ltr", balance_title: "Your balance of MY PIRATE KING", level_lbl: "Current Level:", mining_status: "Mining automatically...", claim_btn: "Claim Earnings", fleet_title: "⚓ Upgrade Warship Fleet", fleet_desc: "Owning ships gives you massive cumulative mining power.", wheel_title: "Daily Lucky Wheel", wheel_desc: "Available once every 24 hours only! Try your luck to win exclusive rewards.", spin_btn: "Spin Wheel", rewards_title: "🏆 Tasks & Referral System", tasks_group_title: "🏴‍☠️ Novice Pirate Tasks", task_tg: "Subscribe to Telegram Channel", task_x: "Follow our X Account", verify: "Verify", completed: "Completed ✓", ref_title: "🔗 Referral System (Invite Friends)", ref_desc: "Get 50 PIRATE$ and XP rewards for each friend who joins via your link.", ref_btn: "Invite Friends / Copy Link", wallet_title: "Wallet & Swap", wallet_desc: "Convert your mining earnings into real withdrawable crypto.", wallet_dis: "Wallet Disconnected ❌", wallet_con: "Wallet Connected ✅", wallet_avail: "Withdrawable Wallet Balance:", connect_wallet: "🔗 Connect TON Wallet", swap_title: "🔄 Currency Swap", swap_rate_desc: "Every 100,000 PIRATE$ equals 1.00$ USD (Approved TON Price: 1.85$)", from_lbl: "From:", confirm_swap: "Confirm Swap", deposit_lbl: "📥 Deposit TON", withdraw_lbl: "📤 Withdraw Earnings", nav_wallet: "Wallet", nav_rewards: "Rewards", nav_wheel: "Wheel", nav_fleet: "Fleet", nav_mining: "Mining", deposit_modal_title: "📥 Deposit Coins Process", withdraw_modal_title: "📤 Request Profit Withdrawal", cancel: "Cancel", submit_deposit: "Confirm Deposit", submit_withdraw: "Send Withdrawal Request", owned: "Owned ✓", buy: "Buy", invalid_amount: "Please enter a valid amount!", insufficient_bal: "Your balance is insufficient!", swap_success: "Swap executed successfully!", win_ton: "Exceptional luck! You won 0.001 TON!", win_usdt: "Exceptional luck! You won 0.005 USDT!", better_luck: "Better luck next time, Captain! 🏴‍☠️", better_luck_wheel: "Try Again", alert_copied: "Referral link copied & shared!", ship_owned_alert: "You already own this ship!", ship_buy_success: "Congratulations Captain! Purchased ", ship_no_money: "Your balance is insufficient to buy this ship!", task_success: "Verification successful! You got +", cooldown_text: "Available in: "
             },
             ar: {
-                dir: "rtl", balance_title: "رصيدك من عملة MY PIRATE KING", level_lbl: "المستوى الحالي:", mining_status: "جاري التعدين تلقائياً...", claim_btn: "جمع الأرباح (Claim)", fleet_title: "⚓ ترقية أسطول السفن الحربية", fleet_desc: "امتلاك السفن يمنحك قوة تعدين تراكمية خارقة.", wheel_title: "عجلة الحظ اليومية", wheel_desc: "متاحة مرة واحدة كل 24 ساعة فقط! جرب حظك للفوز بمكافآت حصرية.", spin_btn: "تدوير العجلة", rewards_title: "🏆 المهام ونظام الإحالة", tasks_group_title: "🏴‍☠️ مهام القراصنة المبتدئين", task_tg: "الاشتراك بقناة التليجرام", task_x: "متابعة حسابنا على منصة X", verify: "تحقق", completed: "مكتملة ✓", ref_title: "🔗 نظام الإحالة (ادعُ صديقاً)", ref_desc: "احصل على 50 عملة PIRATE$ ومكافأة XP عن كل صديق ينضم عبر رابطك.", ref_btn: "دعوة الأصدقاء / نسخ الرابط", wallet_title: "المحفظة والتبديل المالي", wallet_desc: "حول أرباح التعدين إلى عملات مشفرة حقيقية قابلة للسحب.", wallet_dis: "المحفظة غير متصلة ❌", wallet_con: "المحفظة متصلة ✅", wallet_avail: "رصيد المحفظة الجاهز للسحب:", connect_wallet: "🔗 ربط محفظة TON Wallet", swap_title: "🔄 تبديل العملات (Swap)", swap_rate_desc: "كل 100,000 عملة PIRATE$ تساوي 1.00$ دولار (سعر TON المعتمد: 1.85$)", from_lbl: "من:", confirm_swap: "تأكيد عملية التبديل", deposit_lbl: "📥 إيداع TON", withdraw_lbl: "📤 سحب الأرباح", nav_wallet: "المحفظة", nav_rewards: "الجوائز", nav_wheel: "العجلة", nav_fleet: "الأسطول", nav_mining: "التعدين", deposit_modal_title: "📥 عملية إيداع عملات", withdraw_modal_title: "📤 طلب سحب أرباح", cancel: "إلغاء", submit_deposit: "تأكيد الإيداع", submit_withdraw: "إرسال طلب السحب", owned: "مملوكة ✓", buy: "شراء", invalid_amount: "الرجاء إدخال كمية صحيحة!", insufficient_bal: "رصيدك لا يكفي!", swap_success: "تم التبديل بنجاح!", win_ton: "حظ استثنائي! فزت بـ 0.001 TON!", win_usdt: "حظ استثنائي! فزت بـ 0.005 USDT!", better_luck: "حظاً أوفر كابتن! 🏴‍☠️", better_luck_wheel: "حظ أوفر", alert_copied: "تم نسخ رابط الإحالة ومشاركته!", ship_owned_alert: "تملك هذه السفينة بالفعل!", ship_buy_success: "تهانينا كابتن! تم شراء ", ship_no_money: "رصيدك غير كافٍ لشراء هذه السفينة!", task_success: "تم التوثق بنجاح! حصلت على +", cooldown_text: "متاح بعد: ", disconnect_wallet: "❌ فصل المحفظة"
+                dir: "rtl", balance_title: "رصيدك من عملة MY PIRATE KING", level_lbl: "المستوى الحالي:", mining_status: "جاري التعدين تلقائياً...", claim_btn: "جمع الأرباح (Claim)", fleet_title: "⚓ ترقية أسطول السفن الحربية", fleet_desc: "امتلاك السفن يمنحك قوة تعدين تراكمية خارقة.", wheel_title: "عجلة الحظ اليومية", wheel_desc: "متاحة مرة واحدة كل 24 ساعة فقط! جرب حظك للفوز بمكافآت حصرية.", spin_btn: "تدوير العجلة", rewards_title: "🏆 المهام ونظام الإحالة", tasks_group_title: "🏴‍☠️ مهام القراصنة المبتدئين", task_tg: "الاشتراك بقناة التليجرام", task_x: "متابعة حسابنا على منصة X", verify: "تحقق", completed: "مكتملة ✓", ref_title: "🔗 نظام الإحالة (ادعُ صديقاً)", ref_desc: "احصل على 50 عملة PIRATE$ ومكافأة XP عن كل صديق ينضم عبر رابطك.", ref_btn: "دعوة الأصدقاء / نسخ الرابط", wallet_title: "المحفظة والتبديل المالي", wallet_desc: "حول أرباح التعدين إلى عملات مشفرة حقيقية قابلة للسحب.", wallet_dis: "المحفظة غير متصلة ❌", wallet_con: "المحفظة متصلة ✅", wallet_avail: "رصيد المحفظة الجاهز للسحب:", connect_wallet: "🔗 ربط محفظة TON Wallet", swap_title: "🔄 تبديل العملات (Swap)", swap_rate_desc: "كل 100,000 عملة PIRATE$ تساوي 1.00$ دولار (سعر TON المعتمد: 1.85$)", from_lbl: "من:", confirm_swap: "تأكيد عملية التبديل", deposit_lbl: "📥 إيداع TON", withdraw_lbl: "📤 سحب الأرباح", nav_wallet: "المحفظة", nav_rewards: "الجوائز", nav_wheel: "العجلة", nav_fleet: "الأسطول", nav_mining: "التعدين", deposit_modal_title: "📥 عملية إيداع عملات", withdraw_modal_title: "📤 طلب سحب أرباح", cancel: "إلغاء", submit_deposit: "تأكيد الإيداع", submit_withdraw: "إرسال طلب السحب", owned: "مملوكة ✓", buy: "شراء", invalid_amount: "الرجاء إدخال كمية صحيحة!", insufficient_bal: "رصيدك لا يكفي!", swap_success: "تم التبديل بنجاح!", win_ton: "حظ استثنائي! فزت بـ 0.001 TON!", win_usdt: "حظ استثنائي! فزت بـ 0.005 USDT!", better_luck: "حظاً أوفر كابتن! 🏴‍☠️", better_luck_wheel: "حظ أوفر", alert_copied: "تم نسخ رابط الإحالة ومشاركته!", ship_owned_alert: "تملك هذه السفينة بالفعل!", ship_buy_success: "تهانينا كابتن! تم شراء ", ship_no_money: "رصيدك غير كافٍ لشراء هذه السفينة!", task_success: "تم التوثق بنجاح! حصلت على +", cooldown_text: "متاح بعد: "
             }
         };
 
@@ -598,7 +598,7 @@
             const botUsername = "MyPirateKing_bot"; 
             const refLink = `https://t.me/${botUsername}?start=ref_${telegramUserId}`;
             if (window.Telegram && window.Telegram.WebApp) {
-                const text = currentLang === "ar" ? "انضم إلى أسطول القراصنة الخاص بي وقم بتعدين العملات مجاناً! 🏴‍☠️" : "Join my pirate crew crew and mine PIRATE$ coins for free! 🏴‍☠️";
+                const text = currentLang === "ar" ? "انضم إلى أسطول القراصنة الخاص بي وقم بتعدين العملات مجاناً! 🏴‍橙" : "Join my pirate crew crew and mine PIRATE$ coins for free! 🏴‍☠️";
                 Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(text)}`);
             } else {
                 navigator.clipboard.writeText(refLink).then(() => { alert(translations[currentLang].alert_copied); });
@@ -748,6 +748,7 @@
             }
         }
 
+        // اللمسة السحرية: تحديث العرض العلوي للمحفظة فقط وترك الزر الذكي يتحكم بنفسه تلقائياً
         function updateDisplay() {
             document.getElementById('main-balance').innerText = mainBalance.toFixed(2);
             document.getElementById('crypto-balance-usdt').innerText = walletUSDT.toFixed(2);
@@ -758,14 +759,11 @@
             document.getElementById('rate-display').innerText = `+${currentRate.toFixed(4)}/${currentLang === 'ar' ? 'ثانية' : 's'}`;
             
             const display = document.getElementById('wallet-address-display');
-            const btn = document.getElementById('connectWalletBtn');
             if (walletConnected && walletAddress) {
                 const shortAddress = walletAddress.slice(0, 4) + "..." + walletAddress.slice(-4);
                 display.innerText = `${shortAddress} ✅`;
-                btn.innerText = translations[currentLang].disconnect_wallet;
             } else {
                 display.innerText = translations[currentLang].wallet_dis;
-                btn.innerText = translations[currentLang].connect_wallet;
             }
         }
 
@@ -846,11 +844,45 @@
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         
-        function submitDeposit() {
+        // اللمسة السحرية: جعل دالة الإيداع حقيقية وتفتح المحفظة لخصم عملات TON وإرسالها لك
+        async function submitDeposit() {
             const amt = document.getElementById('dep-amount').value;
             if(!amt || amt <= 0) return alert(translations[currentLang].invalid_amount);
-            alert(currentLang === 'ar' ? "تم تسجيل طلب الإيداع مؤقتاً، جاري التحقق السحابي..." : "Deposit registered, cloud verifying...");
-            closeModal('deposit-modal');
+            
+            if (!tonConnectUI.connected) {
+                alert(currentLang === 'ar' ? "يرجى ربط محفظتك أولاً عبر الزر الرئيسي!" : "Please connect your wallet first via the main button!");
+                return;
+            }
+
+            // تحويل القيمة المدخلة إلى وحدة النانوتون المصغرة (Nanotons)
+            const nanoAmount = (parseFloat(amt) * 1000000000).toString();
+
+            const transaction = {
+                validUntil: Math.floor(Date.now() / 1000) + 600, // صالح لمدة 10 دقائق
+                messages: [
+                    {
+                        address: "ضع_هنا_عنوان_محفظة_مشروعك_الرئيسية", // اإستبدل هذا النص بنص عنوان محفظتك لاستلام أموال اللاعبين
+                        amount: nanoAmount,
+                        payload: "" 
+                    }
+                ]
+            };
+
+            try {
+                alert(currentLang === 'ar' ? "جاري فتح محفظتك لتأكيد عملية الدفع..." : "Opening your wallet to confirm the payment...");
+                const result = await tonConnectUI.sendTransaction(transaction);
+                
+                alert(currentLang === 'ar' ? "تم الإيداع بنجاح! جاري شحن رصيدك..." : "Deposit successful! Charging your balance...");
+                closeModal('deposit-modal');
+                
+                // مكافأة اللاعب تلقائياً بعد الدفع (مثال: كل 1 تون يمنحه 100,000 عملة في اللعبة)
+                mainBalance += (parseFloat(amt) * 100000);
+                updateDisplay();
+                saveGameDataToServer();
+            } catch (error) {
+                console.error("Deposit Error:", error);
+                alert(currentLang === 'ar' ? "تم إلغاء المعاملة أو فشل الإيداع الحقيقي." : "Transaction cancelled or deposit failed.");
+            }
         }
         
         function submitWithdraw() {
@@ -861,13 +893,13 @@
             closeModal('withdraw-modal');
         }
         
-        // تهيئة أداة TON Connect الحقيقية بالرابط والمستودع الخاص بك لفك تجميد الزر
+        // تهيئة أداة TON Connect الحقيقية بالمانيفست الخاص بك لربط المحافظ بشكل آمن
         const tonConnectUI = new tonconnectui.TonConnectUI({
             manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json', 
             buttonRootId: 'connectWalletBtn'
         });
 
-        // مراقبة الاتصال الحقيقي وحفظ السحاب التلقائي
+        // مراقبة حالة الاتصال وتحديث البيانات تلقائياً دون أي تدخل بشري
         tonConnectUI.onStatusChange(wallet => {
             if (wallet) {
                 walletConnected = true;
@@ -879,15 +911,6 @@
             updateDisplay();
             saveGameDataToServer();
         });
-
-        // دالة الزر لفتح نافذة الاتصال الحقيقية بالـ TON Connect المحترفة
-        async function toggleWalletConnect() {
-            if (tonConnectUI.connected) {
-                await tonConnectUI.disconnect();
-            } else {
-                await tonConnectUI.openModal();
-            }
-        }
     </script>
 </body>
 </html>
