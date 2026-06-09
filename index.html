@@ -847,7 +847,7 @@
             const amt = document.getElementById('dep-amount').value;
             if(!amt || amt <= 0) return alert(translations[currentLang].invalid_amount);
             
-            if (!tonConnectUI.connected) {
+            if (!tonConnectUI || !tonConnectUI.connected) {
                 alert(currentLang === 'ar' ? "يرجى ربط محفظتك أولاً عبر الزر الرئيسي!" : "Please connect your wallet first via the main button!");
                 return;
             }
@@ -858,7 +858,7 @@
                 validUntil: Math.floor(Date.now() / 1000) + 600, 
                 messages: [
                     {
-                        address: "ضع_هنا_عنوان_محفظة_مشروعك_الرئيسية", // استبدل هذا بالنص الحقيقي لمحفظتك
+                        address: "ضع_هنا_عنوان_محفظة_مشروعك_الرئيسية", 
                         amount: nanoAmount,
                         payload: "" 
                     }
@@ -889,41 +889,68 @@
             closeModal('withdraw-modal');
         }
         
-        // لمسة الذيل السحرية: تهيئة سريعة يديرها نظام تحكم قسري يدوي
-        const tonConnectUI = new tonconnectui.TonConnectUI({
-            manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
-        });
+        // ==========================================
+        // ✨ لمسة الذيل السحرية المحصنة والمحدثة ✨
+        // ==========================================
+        let tonConnectUI;
 
+        try {
+            // الفحص الذكي: تحديد الصيغة الصحيحة للمكتبة حسب نوع الهاتف ومتصفح التليجرام
+            if (typeof TONConnectUI !== 'undefined') {
+                tonConnectUI = new TONConnectUI.TonConnectUI({
+                    manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
+                });
+            } else if (typeof tonconnectui !== 'undefined') {
+                tonConnectUI = new tonconnectui.TonConnectUI({
+                    manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
+                });
+            } else {
+                console.error("⚓ TON Connect Library NOT FOUND in Global Scope!");
+            }
+        } catch (e) {
+            console.error("Initialization Critical Error:", e);
+        }
+
+        // دالة الربط القسرية المعدلة والمحمية بنظام فحص الأخطاء
         async function connectTonWalletManual() {
             try {
+                if (!tonConnectUI) {
+                    alert(currentLang === 'ar' ? "خطأ: لم يتم تحميل مكتبة المحفظة بعد، أعد المحاولة!" : "Error: Wallet library not loaded yet, retry!");
+                    return;
+                }
+
                 if (tonConnectUI.connected) {
                     await tonConnectUI.disconnect();
                     walletConnected = false;
                     walletAddress = "";
-                    alert(currentLang === 'ar' ? "تم فصل المحفظة." : "Wallet disconnected.");
+                    alert(currentLang === 'ar' ? "تم فصل المحفظة بنجاح." : "Wallet disconnected.");
                 } else {
-                    alert(currentLang === 'ar' ? "جاري فتح قائمة المحافظ الاستثمارية..." : "Opening wallet list...");
+                    // فتح قائمة المحافظ قسرياً برمجياً دون جمود
                     await tonConnectUI.openModal();
                 }
             } catch (error) {
                 console.error("Manual Connection Error:", error);
+                alert(currentLang === 'ar' ? "فشل فتح المحفظة، يرجى إعادة تحديث الصفحة." : "Failed to open wallet, please reload page.");
             }
         }
 
-        tonConnectUI.onStatusChange(wallet => {
-            const btn = document.getElementById('connectWalletBtn');
-            if (wallet) {
-                walletConnected = true;
-                walletAddress = wallet.account.address;
-                if(btn) btn.innerText = currentLang === 'ar' ? "❌ فصل المحفظة" : "❌ Disconnect Wallet";
-            } else {
-                walletConnected = false;
-                walletAddress = "";
-                if(btn) btn.innerText = currentLang === 'ar' ? "🔗 ربط محفظة TON Wallet" : "🔗 Connect TON Wallet";
-            }
-            updateDisplay();
-            saveGameDataToServer();
-        });
+        // مراقبة حالة الاتصال وتحديث النصوص تلقائياً بدون تعليق
+        if (tonConnectUI) {
+            tonConnectUI.onStatusChange(wallet => {
+                const btn = document.getElementById('connectWalletBtn');
+                if (wallet) {
+                    walletConnected = true;
+                    walletAddress = wallet.account.address;
+                    if(btn) btn.innerText = currentLang === 'ar' ? "❌ فصل المحفظة" : "❌ Disconnect Wallet";
+                } else {
+                    walletConnected = false;
+                    walletAddress = "";
+                    if(btn) btn.innerText = currentLang === 'ar' ? "🔗 ربط محفظة TON Wallet" : "🔗 Connect TON Wallet";
+                }
+                updateDisplay();
+                saveGameDataToServer();
+            });
+        }
     </script>
 </body>
 </html>
