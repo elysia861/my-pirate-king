@@ -455,7 +455,7 @@
     <div id="deposit-modal" class="modal">
         <div class="modal-content">
             <h4 style="margin:0 0 10px 0; color:#4caf50;" data-i18n="deposit_modal_title">📥 Deposit Coins Process</h4>
-            <div style="font-size:11px; background:#000; padding:8px; text-align:center; border-radius:5px; color:var(--primary-color); word-break:break-all;">EQD_PirateKing_ProjectWallet_Address_Example</div>
+            <div style="font-size:11px; background:#000; padding:8px; text-align:center; border-radius:5px; color:var(--primary-color); word-break:break-all;">ضع_عنوان_محفظتك_الحقيقية_هنا</div>
             <input type="number" class="modal-input" placeholder="TON Amount" id="dep-amount">
             <button class="w-btn deposit-btn" style="width:100%;" data-i18n="submit_deposit" onclick="submitDeposit()">Confirm Deposit</button>
             <button class="w-btn" style="width:100%; background:#445566; margin-top:5px; color:#fff;" data-i18n="cancel" onclick="closeModal('deposit-modal')">Cancel</button>
@@ -474,8 +474,11 @@
 
     <script>
         const API_URL = "https://my-pirate-king.vercel.app";
-
-        window.tonConnectUI = null;
+        
+        // تهيئة وحيدة للمكتبة لمنع التكرار والتضارب والتنبيهات الخاطئة
+        const tonConnectUI = new TONConnectUI.TonConnectUI({
+            manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
+        });
 
         const translations = {
             en: {
@@ -528,38 +531,6 @@
             { text: "0.005 USDT", color: "#78281f", isCrypto: true, action: () => { walletUSDT += 0.005; alert(translations[currentLang].win_usdt); } },
             { text: "better_luck_wheel", color: "#515a5a", isKey: true, action: () => { alert(translations[currentLang].better_luck); } }
         ];
-
-        function initializeTonConnectUI() {
-            if (window.tonConnectUI) return true;
-
-            let TargetLib = null;
-            if (typeof TONConnectUI !== 'undefined') { TargetLib = TONConnectUI.TonConnectUI; }
-            else if (typeof tonconnectui !== 'undefined') { TargetLib = tonconnectui.TonConnectUI; }
-            else if (window.TONConnectUI && window.TONConnectUI.TonConnectUI) { TargetLib = window.TONConnectUI.TonConnectUI; }
-            
-            if (TargetLib) {
-                window.tonConnectUI = new TargetLib({
-                    manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
-                });
-                
-                window.tonConnectUI.onStatusChange(wallet => {
-                    const btn = document.getElementById('connectWalletBtn');
-                    if (wallet) {
-                        walletConnected = true;
-                        walletAddress = wallet.account.address;
-                        if(btn) btn.innerText = currentLang === 'ar' ? "❌ فصل المحفظة" : "❌ Disconnect Wallet";
-                    } else {
-                        walletConnected = false;
-                        walletAddress = "";
-                        if(btn) btn.innerText = currentLang === 'ar' ? "🔗 ربط محفظة TON Wallet" : "🔗 Connect TON Wallet";
-                    }
-                    updateDisplay();
-                    saveGameDataToServer();
-                });
-                return true;
-            }
-            return false;
-        }
 
         async function saveGameDataToServer() {
             if (telegramUserId === "guest") return; 
@@ -645,9 +616,24 @@
             return totalBoost;
         }
 
+        // الاستماع لتغير حالة المحفظة من المحرك مباشرة ليكون سريع الاستجابة
+        tonConnectUI.onStatusChange(wallet => {
+            const btn = document.getElementById('connectWalletBtn');
+            if (wallet) {
+                walletConnected = true;
+                walletAddress = wallet.account.address;
+                if(btn) btn.innerText = currentLang === 'ar' ? "❌ فصل المحفظة" : "❌ Disconnect Wallet";
+            } else {
+                walletConnected = false;
+                walletAddress = "";
+                if(btn) btn.innerText = currentLang === 'ar' ? "🔗 ربط محفظة TON Wallet" : "🔗 Connect TON Wallet";
+            }
+            updateDisplay();
+            saveGameDataToServer();
+        });
+
         document.addEventListener("DOMContentLoaded", async function() {
             initLanguage();
-            initializeTonConnectUI();
             await loadGameDataFromServer(); 
             renderFleetStore();
             renderTasks();
@@ -791,7 +777,7 @@
             document.getElementById('rate-display').innerText = `+${currentRate.toFixed(4)}/${currentLang === 'ar' ? 'ثانية' : 's'}`;
             
             const display = document.getElementById('wallet-address-display');
-            if (walletConnected && walletAddress) {
+            if (tonConnectUI.connected && walletAddress) {
                 const shortAddress = walletAddress.slice(0, 4) + "..." + walletAddress.slice(-4);
                 display.innerText = `${shortAddress} ✅`;
             } else {
@@ -880,7 +866,7 @@
             const amt = document.getElementById('dep-amount').value;
             if(!amt || amt <= 0) return alert(translations[currentLang].invalid_amount);
             
-            if (!window.tonConnectUI || !window.tonConnectUI.connected) {
+            if (!tonConnectUI.connected) {
                 alert(currentLang === 'ar' ? "يرجى ربط محفظتك أولاً عبر الزر الرئيسي!" : "Please connect your wallet first via the main button!");
                 return;
             }
@@ -891,7 +877,7 @@
                 validUntil: Math.floor(Date.now() / 1000) + 600, 
                 messages: [
                     {
-                        address: "ضع_هنا_عنوان_محفظة_مشروعك_الرئيسية", 
+                        address: "ضع_عنوان_محفظتك_الحقيقية_هنا", 
                         amount: nanoAmount,
                         payload: "" 
                     }
@@ -900,7 +886,7 @@
 
             try {
                 alert(currentLang === 'ar' ? "جاري فتح محفظتك لتأكيد عملية الدفع..." : "Opening your wallet to confirm the payment...");
-                const result = await window.tonConnectUI.sendTransaction(transaction);
+                const result = await tonConnectUI.sendTransaction(transaction);
                 alert(currentLang === 'ar' ? "تم الإيداع بنجاح! جاري شحن رصيدك..." : "Deposit successful! Charging your balance...");
                 closeModal('deposit-modal');
                 mainBalance += (parseFloat(amt) * 100000);
@@ -922,24 +908,17 @@
 
         async function connectTonWalletManual() {
             try {
-                const isReady = initializeTonConnectUI();
-
-                if (!isReady || !window.tonConnectUI) {
-                    alert(currentLang === 'ar' ? "المتصفح ثقيل جداً! اسحب الشاشة لأسفل لتحديث الصفحة (Reload) ثم جرب مجدداً." : "Browser is heavy! Please pull down to reload page, then try again.");
-                    return;
-                }
-
-                if (window.tonConnectUI.connected) {
-                    await window.tonConnectUI.disconnect();
+                if (tonConnectUI.connected) {
+                    await tonConnectUI.disconnect();
                     walletConnected = false;
                     walletAddress = "";
                     alert(currentLang === 'ar' ? "تم فصل المحفظة بنجاح." : "Wallet disconnected.");
                 } else {
-                    await window.tonConnectUI.openModal();
+                    await tonConnectUI.openModal();
                 }
             } catch (error) {
                 console.error("Manual Connection Error:", error);
-                alert(currentLang === 'ar' ? "فشل فتح المحفظة، يرجى تحديث الصفحة وجرب ثانية." : "Failed to open wallet, please reload and try again.");
+                alert(currentLang === 'ar' ? "فشل فتح قائمة المحافظ، يرجى إعادة المحاولة." : "Failed to open wallet list, please try again.");
             }
         }
     </script>
