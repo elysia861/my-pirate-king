@@ -455,7 +455,7 @@
     <div id="deposit-modal" class="modal">
         <div class="modal-content">
             <h4 style="margin:0 0 10px 0; color:#4caf50;" data-i18n="deposit_modal_title">📥 Deposit Coins Process</h4>
-            <div style="font-size:11px; background:#000; padding:8px; text-align:center; border-radius:5px; color:var(--primary-color); word-break:break-all;">ضع_عنوان_محفظتك_الحقيقية_هنا</div>
+            <div style="font-size:11px; background:#000; padding:8px; text-align:center; border-radius:5px; color:var(--primary-color); word-break:break-all;">UQA-kDXOsiO3Sp9RZiVWBVzUTYufG8iDPI75sAii5dF2IYum</div>
             <input type="number" class="modal-input" placeholder="TON Amount" id="dep-amount">
             <button class="w-btn deposit-btn" style="width:100%;" data-i18n="submit_deposit" onclick="submitDeposit()">Confirm Deposit</button>
             <button class="w-btn" style="width:100%; background:#445566; margin-top:5px; color:#fff;" data-i18n="cancel" onclick="closeModal('deposit-modal')">Cancel</button>
@@ -475,7 +475,6 @@
     <script>
         const API_URL = "https://my-pirate-king.vercel.app";
         
-        // تهيئة وحيدة للمكتبة لمنع التكرار والتضارب والتنبيهات الخاطئة
         const tonConnectUI = new TONConnectUI.TonConnectUI({
             manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
         });
@@ -601,7 +600,7 @@
             const botUsername = "MyPirateKing_bot"; 
             const refLink = `https://t.me/${botUsername}?start=ref_${telegramUserId}`;
             if (window.Telegram && window.Telegram.WebApp) {
-                const text = currentLang === "ar" ? "انضم إلى أسطول القراصنة الخاص بي وقم بتعدين العملات مجاناً! 🏴‍橙" : "Join my pirate crew crew and mine PIRATE$ coins for free! 🏴‍☠️";
+                const text = currentLang === "ar" ? "انضم إلى أسطول القراصنة الخاص بي وقم بتعدين العملات مجاناً! 🏴‍☠️" : "Join my pirate crew crew and mine PIRATE$ coins for free! 🏴‍☠️";
                 Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(text)}`);
             } else {
                 navigator.clipboard.writeText(refLink).then(() => { alert(translations[currentLang].alert_copied); });
@@ -616,7 +615,6 @@
             return totalBoost;
         }
 
-        // الاستماع لتغير حالة المحفظة من المحرك مباشرة ليكون سريع الاستجابة
         tonConnectUI.onStatusChange(wallet => {
             const btn = document.getElementById('connectWalletBtn');
             if (wallet) {
@@ -877,7 +875,8 @@
                 validUntil: Math.floor(Date.now() / 1000) + 600, 
                 messages: [
                     {
-                        address: "ضع_عنوان_محفظتك_الحقيقية_هنا", 
+                        // تم تعديل المحفظة هنا لإرسال المعاملات الحقيقية إليك مباشرة
+                        address: "UQA-kDXOsiO3Sp9RZiVWBVzUTYufG8iDPI75sAii5dF2IYum", 
                         amount: nanoAmount,
                         payload: "" 
                     }
