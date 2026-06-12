@@ -287,59 +287,7 @@
 
     <script>
         const API_URL = "https://my-pirate-king.vercel.app";
-
-        let tonConnectUI;
-        
-        // دالة ذكية لتهيئة المحفظة بأمان فور تحميل الصفحة
-        function initTonConnectWithFallback() {
-            try {
-                // التحقق من وجود المكتبة في المتصفح
-                if (typeof TONConnectUI !== 'undefined' && TONConnectUI.TonConnectUI) {
-                    tonConnectUI = new TONConnectUI.TonConnectUI({
-                        manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
-                    });
-                    console.log("TON Connect UI initialized successfully!");
-                    setupWalletStatusListener(); // تشغيل مراقب الحساب
-                } else if (window.TONConnectUI) {
-                    tonConnectUI = new window.TONConnectUI({
-                        manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
-                    });
-                    setupWalletStatusListener();
-                } else {
-                    console.error("TONConnectUI script not loaded yet. Retrying in 1 second...");
-                    setTimeout(initTonConnectWithFallback, 1000); // إعادة المحاولة بعد ثانية
-                }
-            } catch(e) {
-                console.error("TonConnect init error", e);
-            }
-        }
-
-        // تشغيل التهيئة الآمنة فوراً عند تحميل النافذة
-        if (window.attachEvent) {
-            window.attachEvent('onload', initTonConnectWithFallback);
-        } else {
-            window.addEventListener('load', initTonConnectWithFallback, false);
-        }
-
-        // عزل المراقب في دالة مستقلة لمنع حدوث أي خطأ قبل التهيئة
-        function setupWalletStatusListener() {
-            if(!tonConnectUI) return;
-            tonConnectUI.onStatusChange(wallet => {
-                const btn = document.getElementById('connectWalletBtn');
-                if (wallet) {
-                    walletConnected = true;
-                    walletAddress = wallet.account.address;
-                    if(btn) btn.innerText = currentLang === 'ar' ? "❌ فصل محفظة TON" : "❌ Disconnect TON Wallet";
-                } else {
-                    walletConnected = false;
-                    walletAddress = "";
-                    if(btn) btn.innerText = currentLang === 'ar' ? "🔗 ربط محفظة TON Wallet" : "🔗 Connect TON Wallet";
-                }
-                updateDisplay();
-                saveGameDataToServer();
-            });
-        }
-        }
+        let tonConnectUI = null; // تهيئة المتغير فارغاً لتعبئته عند التحميل الآمن
 
         const translations = {
             en: {
@@ -394,6 +342,29 @@
             { text: "0.005 USDT", color: "#78281f", action: () => { walletUSDT += 0.005; alert(translations[currentLang].win_usdt); } },
             { text: "better_luck_wheel", color: "#515a5a", isKey: true, action: () => { alert(translations[currentLang].better_luck); } }
         ];
+
+        // دالة التهيئة الذكية والمؤمنة بالكامل لحل مشكلة فشل المكتبة التلقائي
+        function safeInitTonConnect() {
+            try {
+                if (typeof TONConnectUI !== 'undefined' && TONConnectUI.TonConnectUI) {
+                    tonConnectUI = new TONConnectUI.TonConnectUI({
+                        manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
+                    });
+                    activateWalletListener();
+                } else if (window.TONConnectUI) {
+                    tonConnectUI = new window.TONConnectUI({
+                        manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
+                    });
+                    activateWalletListener();
+                } else {
+                    console.log("Waiting for script load...");
+                    setTimeout(safeInitTonConnect, 500); 
+                }
+            } catch(err) {
+                console.error("Initialization Failed, Retrying...", err);
+                setTimeout(safeInitTonConnect, 1000);
+            }
+        }
 
         async function saveGameDataToServer() {
             if (telegramUserId === "guest") return; 
@@ -528,6 +499,9 @@
             renderTasks();
             drawWheel();
             updateDisplay();
+            
+            // إطلاق التهيئة المؤمنة فورا مع تحميل الصفحة
+            safeInitTonConnect();
 
             setInterval(() => {
                 let currentRate = baseRatePerSecond * (1 + calculateTotalBoost());
@@ -822,25 +796,22 @@
             closeModal('withdraw-modal');
         }
 
-        // --- دالة الربط المحدثة والمحمية من التجمد 100% ---
+        // دالة الاتصال اليدوي المحدثة والمحمية من التجمد تماماً
         async function connectTonWalletManual() {
             if(!tonConnectUI) {
-                alert(currentLang === 'ar' ? "فشلت تهيئة مكتبة المحفظة!" : "Wallet library initialization failed!");
+                alert(currentLang === 'ar' ? "فشلت تهيئة مكتبة المحفظة! يرجى الانتظار ثانية والمحاولة مجدداً." : "Wallet library initialization failed! Please wait a second and retry.");
                 return;
             }
             try {
                 if (tonConnectUI.connected) {
                     await tonConnectUI.disconnect();
                 } else {
-                    // الخطة أ: محاولة فتح المودال الأصلي للمكتبة
                     await tonConnectUI.openModal();
                     
-                    // الخطة ب: خطة إنقاذ سريعة فوراً إذا علق المتصفح أو تليجرام ولم يظهر المودال خلال ثانية وثانيتين
                     setTimeout(async () => {
                         if (!tonConnectUI.connected) {
                             console.log("Modal display timeout, triggering fallback redirect...");
                             try {
-                                // فتح رابط تونكيبر المباشر لإيقاظ المحفظة غصباً عن جمود المتصفح
                                 window.open("https://app.tonkeeper.com/ton-connect", "_blank");
                             } catch(e) {
                                 console.error("Redirect fallback failed", e);
@@ -850,12 +821,13 @@
                 }
             } catch (error) {
                 console.error("Manual Connection Error:", error);
-                // ملاذ إنقاذ أخير عند حدوث أي خطأ برمي غير متوقع
                 window.open("https://app.tonkeeper.com/ton-connect", "_blank");
             }
         }
 
-        if(tonConnectUI) {
+        // دالة تفعيل مراقب حالة المحفظة عند التهيئة الناجحة
+        function activateWalletListener() {
+            if(!tonConnectUI) return;
             tonConnectUI.onStatusChange(wallet => {
                 const btn = document.getElementById('connectWalletBtn');
                 if (wallet) {
