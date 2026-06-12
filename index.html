@@ -405,7 +405,7 @@
                     updateDisplay();
                     renderFleetStore();
                     renderTasks();
-                    drawWheel(); // إعادة الرسم بعد التأكد من تفعيل اللغة والبيانات
+                    drawWheel();
                 }
             } catch (err) {
                 console.error("Cloud Load Failed:", err);
@@ -552,7 +552,6 @@
             }
         }
 
-        /* إصلاح منطق المهام ليفصل النصوص تماماً عن الأزرار الميكانيكية */
         function renderTasks() {
             for(let i=0; i<completedTasks.length; i++) {
                 const btn = document.getElementById(`verify-btn-${i}`);
@@ -684,7 +683,6 @@
             }
         }
 
-        /* إصلاح دالة رسم العجلة لحماية النص العربي القصير/الطويل من التسبب بتجميد الأنميشن */
         function drawWheel() {
             const canvas = document.getElementById('wheelCanvas'); if(!canvas) return;
             const ctx = canvas.getContext('2d'); const radius = canvas.width / 2;
@@ -699,7 +697,6 @@
                 let text = prizes[i].text;
                 if(prizes[i].isKey) { text = translations[currentLang][prizes[i].text]; }
                 
-                // التحكم بحجم الخط تلقائياً حسب طول النص لحماية تجمد Canvas
                 if(text.length > 8) { ctx.font = "bold 9px Arial"; } 
                 else { ctx.font = "bold 11px Arial"; }
                 
@@ -772,27 +769,45 @@
             }
         }
         
-        /* دالة السحب مجهزة ومحمية منطقياً للإرسال إلى الـ Backend */
         async function submitWithdraw() {
             const addr = document.getElementById('with-address').value;
             const amt = document.getElementById('with-amount').value;
             if(!addr || !amt || amt <= 0) return alert(translations[currentLang].invalid_amount);
             
-            // هنا يمكنك مستقبلاً إطلاق طلب fetch إلى السيرفر لتسجيل السحب
             alert(currentLang === 'ar' ? "تم إرسال طلب السحب للمراجعة الفنية!" : "Withdrawal request sent for technical review!");
             closeModal('withdraw-modal');
         }
 
+        // --- دالة الربط المحدثة والمحمية من التجمد 100% ---
         async function connectTonWalletManual() {
-            if(!tonConnectUI) return;
+            if(!tonConnectUI) {
+                alert(currentLang === 'ar' ? "فشلت تهيئة مكتبة المحفظة!" : "Wallet library initialization failed!");
+                return;
+            }
             try {
                 if (tonConnectUI.connected) {
                     await tonConnectUI.disconnect();
                 } else {
+                    // الخطة أ: محاولة فتح المودال الأصلي للمكتبة
                     await tonConnectUI.openModal();
+                    
+                    // الخطة ب: خطة إنقاذ سريعة فوراً إذا علق المتصفح أو تليجرام ولم يظهر المودال خلال ثانية وثانيتين
+                    setTimeout(async () => {
+                        if (!tonConnectUI.connected) {
+                            console.log("Modal display timeout, triggering fallback redirect...");
+                            try {
+                                // فتح رابط تونكيبر المباشر لإيقاظ المحفظة غصباً عن جمود المتصفح
+                                window.open("https://app.tonkeeper.com/ton-connect", "_blank");
+                            } catch(e) {
+                                console.error("Redirect fallback failed", e);
+                            }
+                        }
+                    }, 1200);
                 }
             } catch (error) {
                 console.error("Manual Connection Error:", error);
+                // ملاذ إنقاذ أخير عند حدوث أي خطأ برمي غير متوقع
+                window.open("https://app.tonkeeper.com/ton-connect", "_blank");
             }
         }
 
