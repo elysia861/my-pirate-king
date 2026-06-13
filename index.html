@@ -287,7 +287,7 @@
 
     <script>
         const API_URL = "https://my-pirate-king.vercel.app";
-        let tonConnectUI = null; // تهيئة المتغير فارغاً لتعبئته عند التحميل الآمن
+        let tonConnectUI = null; 
 
         const translations = {
             en: {
@@ -343,7 +343,6 @@
             { text: "better_luck_wheel", color: "#515a5a", isKey: true, action: () => { alert(translations[currentLang].better_luck); } }
         ];
 
-        // دالة التهيئة الذكية والمؤمنة بالكامل لحل مشكلة فشل المكتبة التلقائي
         function safeInitTonConnect() {
             try {
                 if (typeof TONConnectUI !== 'undefined' && TONConnectUI.TonConnectUI) {
@@ -454,7 +453,7 @@
             const botUsername = "MyPirateKing_bot"; 
             const refLink = `https://t.me/${botUsername}?start=ref_${telegramUserId}`;
             if (window.Telegram && window.Telegram.WebApp) {
-                const text = currentLang === "ar" ? "انضم إلى أسطول القراصنة الخاص بي وقم بتعدين العملات مجاناً! 🏴‍☠️" : "Join my pirate crew and mine PIRATE$ coins for free! 🏴‍☠️";
+                const text = currentLang === "ar" ? "انضم إلى أسطول القراصنة الخاص بي وقم بتعدين العملات مجاناً! 🏴‍危" : "Join my pirate crew and mine PIRATE$ coins for free! 🏴‍危";
                 Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(text)}`);
             } else {
                 navigator.clipboard.writeText(refLink).then(() => { alert(translations[currentLang].alert_copied); });
@@ -500,7 +499,6 @@
             drawWheel();
             updateDisplay();
             
-            // إطلاق التهيئة المؤمنة فورا مع تحميل الصفحة
             safeInitTonConnect();
 
             setInterval(() => {
@@ -596,7 +594,7 @@
             renderTasks();
             updateDisplay();
             saveGameDataToServer();
-            alert(`${translations[currentLang].task_success}${reward.toLocaleString()}! 🏴‍☠️`);
+            alert(`${translations[currentLang].task_success}${reward.toLocaleString()}! 🏴‍危`);
         }
 
         function renderFleetStore() {
@@ -796,36 +794,54 @@
             closeModal('withdraw-modal');
         }
 
-        // دالة الاتصال اليدوي المحدثة والمحمية من التجمد تماماً
+        // دالة الاتصال اليدوي الذكية والمقاومة للجمود والكاش المدمجة بنجاح
         async function connectTonWalletManual() {
-            if(!tonConnectUI) {
-                alert(currentLang === 'ar' ? "فشلت تهيئة مكتبة المحفظة! يرجى الانتظار ثانية والمحاولة مجدداً." : "Wallet library initialization failed! Please wait a second and retry.");
-                return;
-            }
-            try {
-                if (tonConnectUI.connected) {
-                    await tonConnectUI.disconnect();
-                } else {
-                    await tonConnectUI.openModal();
-                    
-                    setTimeout(async () => {
-                        if (!tonConnectUI.connected) {
-                            console.log("Modal display timeout, triggering fallback redirect...");
-                            try {
-                                window.open("https://app.tonkeeper.com/ton-connect", "_blank");
-                            } catch(e) {
-                                console.error("Redirect fallback failed", e);
-                            }
-                        }
-                    }, 1200);
+            // خدعة الإنقاذ السريع: إذا كانت المكتبة فارغة، نحاول سحبها من المتصفح فوراً قبل الاستسلام
+            if (!tonConnectUI) {
+                console.log("Forced recovery: Trying to catch TONConnectUI on click...");
+                if (typeof TONConnectUI !== 'undefined' && TONConnectUI.TonConnectUI) {
+                    tonConnectUI = new TONConnectUI.TonConnectUI({
+                        manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
+                    });
+                    activateWalletListener();
+                } else if (window.TONConnectUI) {
+                    tonConnectUI = new window.TONConnectUI({
+                        manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
+                    });
+                    activateWalletListener();
                 }
-            } catch (error) {
-                console.error("Manual Connection Error:", error);
+            }
+
+            // إذا نجحت محاولة الإنقاذ أو كانت موجودة أصلاً، نفتح المحفظة فوراً
+            if (tonConnectUI) {
+                try {
+                    if (tonConnectUI.connected) {
+                        await tonConnectUI.disconnect();
+                    } else {
+                        await tonConnectUI.openModal();
+                        
+                        setTimeout(async () => {
+                            if (!tonConnectUI.connected) {
+                                console.log("Modal display timeout, triggering fallback redirect...");
+                                try {
+                                    window.open("https://app.tonkeeper.com/ton-connect", "_blank");
+                                } catch(e) {
+                                    console.error("Redirect fallback failed", e);
+                                }
+                            }
+                        }, 1200);
+                    }
+                } catch (error) {
+                    console.error("Manual Connection Error:", error);
+                    window.open("https://app.tonkeeper.com/ton-connect", "_blank");
+                }
+            } else {
+                // إذا كان خادم unpkg يمر بمشكلة حقيقية في متصفح التليجرام، نفتح المحفظة عبر الرابط المباشر كخطة بديلة فورية
+                console.log("Script completely missing. Using hard redirect fallback.");
                 window.open("https://app.tonkeeper.com/ton-connect", "_blank");
             }
         }
 
-        // دالة تفعيل مراقب حالة المحفظة عند التهيئة الناجحة
         function activateWalletListener() {
             if(!tonConnectUI) return;
             tonConnectUI.onStatusChange(wallet => {
