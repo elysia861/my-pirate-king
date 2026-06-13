@@ -345,19 +345,21 @@
 
         function safeInitTonConnect() {
             try {
-                if (typeof TONConnectUI !== 'undefined' && TONConnectUI.TonConnectUI) {
-                    tonConnectUI = new TONConnectUI.TonConnectUI({
-                        manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
-                    });
-                    activateWalletListener();
-                } else if (window.TONConnectUI) {
-                    tonConnectUI = new window.TONConnectUI({
-                        manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
-                    });
-                    activateWalletListener();
-                } else {
-                    console.log("Waiting for script load...");
-                    setTimeout(safeInitTonConnect, 500); 
+                if (!tonConnectUI) {
+                    if (typeof TONConnectUI !== 'undefined' && TONConnectUI.TonConnectUI) {
+                        tonConnectUI = new TONConnectUI.TonConnectUI({
+                            manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
+                        });
+                        activateWalletListener();
+                    } else if (window.TONConnectUI) {
+                        tonConnectUI = new window.TONConnectUI({
+                            manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
+                        });
+                        activateWalletListener();
+                    } else {
+                        console.log("Waiting for script load...");
+                        setTimeout(safeInitTonConnect, 500); 
+                    }
                 }
             } catch(err) {
                 console.error("Initialization Failed, Retrying...", err);
@@ -794,25 +796,9 @@
             closeModal('withdraw-modal');
         }
 
-        // دالة الاتصال اليدوي الذكية والمقاومة للجمود والكاش المدمجة بنجاح
         async function connectTonWalletManual() {
-            // خدعة الإنقاذ السريع: إذا كانت المكتبة فارغة، نحاول سحبها من المتصفح فوراً قبل الاستسلام
-            if (!tonConnectUI) {
-                console.log("Forced recovery: Trying to catch TONConnectUI on click...");
-                if (typeof TONConnectUI !== 'undefined' && TONConnectUI.TonConnectUI) {
-                    tonConnectUI = new TONConnectUI.TonConnectUI({
-                        manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
-                    });
-                    activateWalletListener();
-                } else if (window.TONConnectUI) {
-                    tonConnectUI = new window.TONConnectUI({
-                        manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
-                    });
-                    activateWalletListener();
-                }
-            }
+            safeInitTonConnect(); 
 
-            // إذا نجحت محاولة الإنقاذ أو كانت موجودة أصلاً، نفتح المحفظة فوراً
             if (tonConnectUI) {
                 try {
                     if (tonConnectUI.connected) {
@@ -822,21 +808,26 @@
                         
                         setTimeout(async () => {
                             if (!tonConnectUI.connected) {
-                                console.log("Modal display timeout, triggering fallback redirect...");
+                                console.log("تأخرت الاستجابة، يتم الآن التوجيه الإجباري عبر الرابط المباشر...");
                                 try {
-                                    window.open("https://app.tonkeeper.com/ton-connect", "_blank");
+                                    const connectLink = tonConnectUI.connector.connect({
+                                        jsBridgeKey: 'tonkeeper'
+                                    });
+                                    if(connectLink) {
+                                        window.open(connectLink, "_blank");
+                                    }
                                 } catch(e) {
                                     console.error("Redirect fallback failed", e);
+                                    window.open("https://app.tonkeeper.com/ton-connect", "_blank");
                                 }
                             }
-                        }, 1200);
+                        }, 1500);
                     }
                 } catch (error) {
                     console.error("Manual Connection Error:", error);
                     window.open("https://app.tonkeeper.com/ton-connect", "_blank");
                 }
             } else {
-                // إذا كان خادم unpkg يمر بمشكلة حقيقية في متصفح التليجرام، نفتح المحفظة عبر الرابط المباشر كخطة بديلة فورية
                 console.log("Script completely missing. Using hard redirect fallback.");
                 window.open("https://app.tonkeeper.com/ton-connect", "_blank");
             }
@@ -850,13 +841,13 @@
                     walletConnected = true;
                     walletAddress = wallet.account.address;
                     if(btn) btn.innerText = currentLang === 'ar' ? "❌ فصل محفظة TON" : "❌ Disconnect TON Wallet";
+                    saveGameDataToServer(); 
                 } else {
                     walletConnected = false;
                     walletAddress = "";
                     if(btn) btn.innerText = currentLang === 'ar' ? "🔗 ربط محفظة TON Wallet" : "🔗 Connect TON Wallet";
                 }
                 updateDisplay();
-                saveGameDataToServer();
             });
         }
     </script>
