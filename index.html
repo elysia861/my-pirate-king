@@ -286,7 +286,6 @@
     </div>
 
     <script>
-        const API_URL = "https://my-pirate-king.vercel.app";
         let tonConnectUI = null; 
 
         const translations = {
@@ -356,7 +355,6 @@
                     });
                     activateWalletListener();
                 } else {
-                    console.log("Waiting for script load...");
                     setTimeout(safeInitTonConnect, 500); 
                 }
             } catch(err) {
@@ -365,47 +363,34 @@
             }
         }
 
-        async function saveGameDataToServer() {
-            if (telegramUserId === "guest") return; 
-            try {
-                await fetch(`${API_URL}/api/save-game`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        telegramId: telegramUserId,
-                        username: telegramUsername,
-                        walletAddress: walletAddress,
-                        mainBalance: mainBalance,
-                        userLevel: userLevel,
-                        userXP: userXP,
-                        walletUSDT: walletUSDT,
-                        walletTON: walletTON,
-                        purchasedShips: purchasedShips,
-                        completedTasks: completedTasks
-                    })
-                });
-            } catch (err) {
-                console.error("Cloud Save Failed:", err);
-            }
+        // تم تحويل الحفظ والتخزين ليعمل على ذاكرة الهاتف المحلية LocalStorage لمنع التصفير بدون سيرفر
+        function saveGameDataToServer() {
+            const gameData = {
+                mainBalance: mainBalance,
+                userLevel: userLevel,
+                userXP: userXP,
+                walletUSDT: walletUSDT,
+                walletTON: walletTON,
+                walletAddress: walletAddress,
+                purchasedShips: purchasedShips,
+                completedTasks: completedTasks,
+                lastSpinTime: lastSpinTime
+            };
+            localStorage.setItem('my_pirate_king_save', JSON.stringify(gameData));
         }
 
-        async function loadGameDataFromServer() {
-            if (telegramUserId === "guest") return;
-            try {
-                const response = await fetch(`${API_URL}/api/save-game`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ telegramId: telegramUserId, username: telegramUsername })
-                });
-                const resData = await response.json();
-                if (resData.success && resData.data) {
-                    const cloudData = resData.data;
+        function loadGameDataFromServer() {
+            const localSave = localStorage.getItem('my_pirate_king_save');
+            if (localSave) {
+                try {
+                    const cloudData = JSON.parse(localSave);
                     mainBalance = cloudData.mainBalance ?? 0;
                     userLevel = cloudData.userLevel ?? 1;
                     userXP = cloudData.userXP ?? 0;
                     walletUSDT = cloudData.walletUSDT ?? 0.00;
                     walletTON = cloudData.walletTON ?? 0.0000;
                     walletAddress = cloudData.walletAddress ?? "";
+                    lastSpinTime = cloudData.lastSpinTime ?? 0;
                     
                     if (cloudData.purchasedShips && Array.isArray(cloudData.purchasedShips)) {
                         purchasedShips = cloudData.purchasedShips;
@@ -420,9 +405,9 @@
                     renderFleetStore();
                     renderTasks();
                     drawWheel();
+                } catch (err) {
+                    console.error("Local Load Failed:", err);
                 }
-            } catch (err) {
-                console.error("Cloud Load Failed:", err);
             }
         }
 
@@ -491,9 +476,10 @@
             });
         }
 
-        window.onload = async function() {
+        window.onload = function() {
             initLanguage();
             initClickEvents();
+            loadGameDataFromServer(); // قراءة الحفظ المحلي أولاً
             renderFleetStore();
             renderTasks();
             drawWheel();
@@ -508,9 +494,10 @@
                 if(liveMinedEl) liveMinedEl.innerText = currentMined.toFixed(2);
             }, 1000);
 
-            setInterval(checkWheelCooldown, 1000);
+            // حفظ تلقائي كل 10 ثوانٍ لضمان عدم ضياع أي رصيد أثناء اللعب التلقائي
+            setInterval(saveGameDataToServer, 10000);
 
-            await loadGameDataFromServer(); 
+            setInterval(checkWheelCooldown, 1000);
         };
 
         function checkWheelCooldown() {
@@ -788,7 +775,7 @@
         async function submitWithdraw() {
             const addr = document.getElementById('with-address').value;
             const amt = document.getElementById('with-amount').value;
-            if(!addr || !amt || amt <= 0) return alert(translations[with_address].invalid_amount || "الرجاء إدخل كمية صحيحة!");
+            if(!addr || !amt || amt <= 0) return alert("الرجاء إدخل كمية صحيحة!");
             
             alert(currentLang === 'ar' ? "تم إرسال طلب السحب للمراجعة الفنية!" : "Withdrawal request sent for technical review!");
             closeModal('withdraw-modal');
@@ -796,7 +783,6 @@
 
         async function connectTonWalletManual() {
             if (!tonConnectUI) {
-                console.log("Forced recovery: Trying to catch TONConnectUI on click...");
                 if (typeof TONConnectUI !== 'undefined' && TONConnectUI.TonConnectUI) {
                     tonConnectUI = new TONConnectUI.TonConnectUI({
                         manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
@@ -816,29 +802,16 @@
                         await tonConnectUI.disconnect();
                     } else {
                         await tonConnectUI.openModal();
-                        
-                        setTimeout(async () => {
-                            if (!tonConnectUI.connected) {
-                                console.log("Modal display timeout, triggering fallback redirect...");
-                                try {
-                                    window.open("https://app.tonkeeper.com/ton-connect", "_blank");
-                                } catch(e) {
-                                    console.error("Redirect fallback failed", e);
-                                }
-                            }
-                        }, 1200);
                     }
                 } catch (error) {
                     console.error("Manual Connection Error:", error);
                     window.open("https://app.tonkeeper.com/ton-connect", "_blank");
                 }
             } else {
-                console.log("Script completely missing. Using hard redirect fallback.");
                 window.open("https://app.tonkeeper.com/ton-connect", "_blank");
             }
         }
 
-        // تم استبدال الدالة هنا بالنسخة المطورة التي تضمن استماعاً وتحديثاً فوريين
         function activateWalletListener() {
             if(!tonConnectUI) return;
             tonConnectUI.onStatusChange(wallet => {
@@ -847,20 +820,13 @@
                     walletConnected = true;
                     walletAddress = wallet.account.address;
                     if(btn) btn.innerText = currentLang === 'ar' ? "❌ فصل محفظة TON" : "❌ Disconnect TON Wallet";
-                    
-                    // تحديث الشاشة فوراً لتغيير حالة المحفظة أمام اللاعب
-                    updateDisplay(); 
-                    
-                    // إرسال البيانات للسيرفر لحفظها في الخلفية
-                    saveGameDataToServer(); 
                 } else {
                     walletConnected = false;
                     walletAddress = "";
                     if(btn) btn.innerText = currentLang === 'ar' ? "🔗 ربط محفظة TON Wallet" : "🔗 Connect TON Wallet";
-                    
-                    updateDisplay();
-                    saveGameDataToServer();
                 }
+                updateDisplay();
+                saveGameDataToServer(); // حفظ مستقل وفوري في ذاكرة الهاتف عند الربط
             });
         }
     </script>
