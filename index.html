@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Pirate King</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://unpkg.com/@tonconnect/ui@2.0.6/dist/tonconnect-ui.min.js"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
         :root {
             --primary-color: #ffc107;
@@ -286,7 +286,16 @@
     </div>
 
     <script>
-        let tonConnectUI = null; 
+        const API_URL = "https://my-pirate-king.vercel.app";
+
+        let tonConnectUI;
+        try {
+            tonConnectUI = new TONConnectUI.TonConnectUi({
+                manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
+            });
+        } catch(e) {
+            console.error("TonConnect init error", e);
+        }
 
         const translations = {
             en: {
@@ -342,55 +351,49 @@
             { text: "better_luck_wheel", color: "#515a5a", isKey: true, action: () => { alert(translations[currentLang].better_luck); } }
         ];
 
-        function safeInitTonConnect() {
+        async function saveGameDataToServer() {
+            if (telegramUserId === "guest") return; 
             try {
-                if (typeof TONConnectUI !== 'undefined' && TONConnectUI.TonConnectUI) {
-                    tonConnectUI = new TONConnectUI.TonConnectUI({
-                        manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
-                    });
-                    activateWalletListener();
-                } else if (window.TONConnectUI) {
-                    tonConnectUI = new window.TONConnectUI({
-                        manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
-                    });
-                    activateWalletListener();
-                } else {
-                    setTimeout(safeInitTonConnect, 500); 
-                }
-            } catch(err) {
-                console.error("Initialization Failed, Retrying...", err);
-                setTimeout(safeInitTonConnect, 1000);
+                await fetch(`${API_URL}/api/save-game`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        telegramId: telegramUserId,
+                        username: telegramUsername,
+                        walletAddress: walletAddress,
+                        mainBalance: mainBalance,
+                        currentMined: currentMined,
+                        userLevel: userLevel,
+                        userXP: userXP,
+                        walletUSDT: walletUSDT,
+                        walletTON: walletTON,
+                        purchasedShips: purchasedShips,
+                        completedTasks: completedTasks
+                    })
+                });
+            } catch (err) {
+                console.error("Cloud Save Failed:", err);
             }
         }
 
-        // تم تحويل الحفظ والتخزين ليعمل على ذاكرة الهاتف المحلية LocalStorage لمنع التصفير بدون سيرفر
-        function saveGameDataToServer() {
-            const gameData = {
-                mainBalance: mainBalance,
-                userLevel: userLevel,
-                userXP: userXP,
-                walletUSDT: walletUSDT,
-                walletTON: walletTON,
-                walletAddress: walletAddress,
-                purchasedShips: purchasedShips,
-                completedTasks: completedTasks,
-                lastSpinTime: lastSpinTime
-            };
-            localStorage.setItem('my_pirate_king_save', JSON.stringify(gameData));
-        }
-
-        function loadGameDataFromServer() {
-            const localSave = localStorage.getItem('my_pirate_king_save');
-            if (localSave) {
-                try {
-                    const cloudData = JSON.parse(localSave);
+        async function loadGameDataFromServer() {
+            if (telegramUserId === "guest") return;
+            try {
+                const response = await fetch(`${API_URL}/api/save-game`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ telegramId: telegramUserId, username: telegramUsername })
+                });
+                const resData = await response.json();
+                if (resData.success && resData.data) {
+                    const cloudData = resData.data;
                     mainBalance = cloudData.mainBalance ?? 0;
+                    currentMined = cloudData.currentMined ?? 0;
                     userLevel = cloudData.userLevel ?? 1;
                     userXP = cloudData.userXP ?? 0;
                     walletUSDT = cloudData.walletUSDT ?? 0.00;
                     walletTON = cloudData.walletTON ?? 0.0000;
                     walletAddress = cloudData.walletAddress ?? "";
-                    lastSpinTime = cloudData.lastSpinTime ?? 0;
                     
                     if (cloudData.purchasedShips && Array.isArray(cloudData.purchasedShips)) {
                         purchasedShips = cloudData.purchasedShips;
@@ -404,10 +407,10 @@
                     updateDisplay();
                     renderFleetStore();
                     renderTasks();
-                    drawWheel();
-                } catch (err) {
-                    console.error("Local Load Failed:", err);
+                    drawWheel(); 
                 }
+            } catch (err) {
+                console.error("Cloud Load Failed:", err);
             }
         }
 
@@ -438,7 +441,7 @@
             const botUsername = "MyPirateKing_bot"; 
             const refLink = `https://t.me/${botUsername}?start=ref_${telegramUserId}`;
             if (window.Telegram && window.Telegram.WebApp) {
-                const text = currentLang === "ar" ? "انضم إلى أسطول القراصنة الخاص بي وقم بتعدين العملات مجاناً! 🏴‍危" : "Join my pirate crew and mine PIRATE$ coins for free! 🏴‍危";
+                const text = currentLang === "ar" ? "انضم إلى أسطول القراصنة الخاص بي وقم بتعدين العملات مجاناً! 🏴‍☠️" : "Join my pirate crew and mine PIRATE$ coins for free! 🏴‍☠️";
                 Telegram.WebApp.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent(text)}`);
             } else {
                 navigator.clipboard.writeText(refLink).then(() => { alert(translations[currentLang].alert_copied); });
@@ -476,17 +479,15 @@
             });
         }
 
-        window.onload = function() {
+        window.onload = async function() {
             initLanguage();
             initClickEvents();
-            loadGameDataFromServer(); // قراءة الحفظ المحلي أولاً
             renderFleetStore();
             renderTasks();
             drawWheel();
             updateDisplay();
-            
-            safeInitTonConnect();
 
+            // حلقة التعدين: تقوم بالتحديث المستمر وعرض البيانات
             setInterval(() => {
                 let currentRate = baseRatePerSecond * (1 + calculateTotalBoost());
                 currentMined += currentRate;
@@ -494,11 +495,37 @@
                 if(liveMinedEl) liveMinedEl.innerText = currentMined.toFixed(2);
             }, 1000);
 
-            // حفظ تلقائي كل 10 ثوانٍ لضمان عدم ضياع أي رصيد أثناء اللعب التلقائي
-            setInterval(saveGameDataToServer, 10000);
+            // الحفظ التلقائي الصامت للسيرفر كل 15 ثانية لمنع ضياع رصيد التعدين
+            setInterval(() => {
+                if (telegramUserId !== "guest") {
+                    saveGameDataToServer();
+                }
+            }, 15000);
 
             setInterval(checkWheelCooldown, 1000);
+
+            await loadGameDataFromServer(); 
         };
+
+        // حماية ميكروثانية: حفظ الرصيد باستعمال sendBeacon فور إغلاق نافذة اللعبة أو التليغرام
+        window.addEventListener('beforeunload', () => {
+            if (telegramUserId !== "guest") {
+                const payload = JSON.stringify({
+                    telegramId: telegramUserId,
+                    username: telegramUsername,
+                    walletAddress: walletAddress,
+                    mainBalance: mainBalance,
+                    currentMined: currentMined,
+                    userLevel: userLevel,
+                    userXP: userXP,
+                    walletUSDT: walletUSDT,
+                    walletTON: walletTON,
+                    purchasedShips: purchasedShips,
+                    completedTasks: completedTasks
+                });
+                navigator.sendBeacon(`${API_URL}/api/save-game-beacon`, payload);
+            }
+        });
 
         function checkWheelCooldown() {
             const btn = document.getElementById('spinBtn');
@@ -581,7 +608,7 @@
             renderTasks();
             updateDisplay();
             saveGameDataToServer();
-            alert(`${translations[currentLang].task_success}${reward.toLocaleString()}! 🏴‍危`);
+            alert(`${translations[currentLang].task_success}${reward.toLocaleString()}! 🏴‍☠️`);
         }
 
         function renderFleetStore() {
@@ -758,7 +785,7 @@
 
             try {
                 alert(currentLang === 'ar' ? "جاري فتح محفظتك لتأكيد عملية الدفع..." : "Opening your wallet to confirm the payment...");
-                const result = await tonConnectUI.sendTransaction(transaction);
+                await tonConnectUI.sendTransaction(transaction);
                 
                 alert(currentLang === 'ar' ? "تم الإيداع بنجاح! جاري شحن رصيدك..." : "Deposit successful! Charging your balance...");
                 closeModal('deposit-modal');
@@ -775,58 +802,42 @@
         async function submitWithdraw() {
             const addr = document.getElementById('with-address').value;
             const amt = document.getElementById('with-amount').value;
-            if(!addr || !amt || amt <= 0) return alert("الرجاء إدخل كمية صحيحة!");
-            
+            if(!addr || !amt || amt <= 0) return alert(translations[currentLang].invalid_amount);
             alert(currentLang === 'ar' ? "تم إرسال طلب السحب للمراجعة الفنية!" : "Withdrawal request sent for technical review!");
             closeModal('withdraw-modal');
         }
 
         async function connectTonWalletManual() {
-            if (!tonConnectUI) {
-                if (typeof TONConnectUI !== 'undefined' && TONConnectUI.TonConnectUI) {
-                    tonConnectUI = new TONConnectUI.TonConnectUI({
-                        manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
-                    });
-                    activateWalletListener();
-                } else if (window.TONConnectUI) {
-                    tonConnectUI = new window.TONConnectUI({
-                        manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
-                    });
-                    activateWalletListener();
+            if(!tonConnectUI) return;
+            try {
+                if (tonConnectUI.connected) {
+                    await tonConnectUI.disconnect();
+                } else {
+                    // فتح الـ Modal الأصلي المدمج بالـ SDK لاستدعاء تلغرام وبقية الخيارات
+                    await tonConnectUI.openModal();
                 }
-            }
-
-            if (tonConnectUI) {
-                try {
-                    if (tonConnectUI.connected) {
-                        await tonConnectUI.disconnect();
-                    } else {
-                        await tonConnectUI.openModal();
-                    }
-                } catch (error) {
-                    console.error("Manual Connection Error:", error);
-                    window.open("https://app.tonkeeper.com/ton-connect", "_blank");
-                }
-            } else {
-                window.open("https://app.tonkeeper.com/ton-connect", "_blank");
+            } catch (error) {
+                console.error("Manual Connection Error:", error);
             }
         }
 
-        function activateWalletListener() {
-            if(!tonConnectUI) return;
+        if(tonConnectUI) {
             tonConnectUI.onStatusChange(wallet => {
                 const btn = document.getElementById('connectWalletBtn');
                 if (wallet) {
                     walletConnected = true;
                     walletAddress = wallet.account.address;
                     if(btn) btn.innerText = currentLang === 'ar' ? "❌ فصل محفظة TON" : "❌ Disconnect TON Wallet";
+                    
+                    // مزامنة فورية وجلب البيانات القديمة بمجرد نجاح الاتصال
+                    loadGameDataFromServer();
                 } else {
                     walletConnected = false;
                     walletAddress = "";
                     if(btn) btn.innerText = currentLang === 'ar' ? "🔗 ربط محفظة TON Wallet" : "🔗 Connect TON Wallet";
                 }
                 updateDisplay();
-                saveGameDataToServer(); // حفظ مستقل وفوري في ذاكرة الهاتف عند الربط
+                saveGameDataToServer();
             });
         }
     </script>
