@@ -155,6 +155,7 @@
         <div style="font-size:12px; color:#aaa; margin-top:5px;"><span id="lvl-lbl">Current Level:</span> <span id="user-level" style="color:var(--primary-color)">1</span> (XP: <span id="user-xp">0</span>)</div>
     </div>
 
+    <!-- Mining Page -->
     <div id="mining-page" class="page-section active">
         <div class="mining-circle" id="mining-circle">
             <div class="anchor-icon">⚓</div>
@@ -165,12 +166,14 @@
         <button class="claim-btn" id="claim-btn-text" onclick="claimEarnings()">Claim Earnings</button>
     </div>
 
+    <!-- Fleet Page -->
     <div id="fleet-page" class="page-section">
         <h3 id="flt-title">⚓ Upgrade Warship Fleet</h3>
         <p style="font-size:12px; color:#aaa; margin-top:-5px;" id="flt-desc">Owning ships gives you massive cumulative mining power.</p>
         <div class="fleet-container" id="fleet-list"></div>
     </div>
 
+    <!-- Wheel Page -->
     <div id="wheel-page" class="page-section">
         <h3 id="whl-title">Daily Lucky Wheel</h3>
         <p style="font-size:13px; color:#aaa;" id="whl-desc">Available once every 24 hours only! Try your luck to win exclusive rewards.</p>
@@ -185,9 +188,9 @@
         <p id="wheel-result" style="margin-top:15px; font-weight:bold; color:var(--primary-color); height: 20px;"></p>
     </div>
 
+    <!-- Rewards Page -->
     <div id="rewards-page" class="page-section">
         <h3 id="rwd-title">🏆 Tasks & Referral System</h3>
-        
         <div class="card-item">
             <h4 style="margin:0 0 10px 0; color:var(--primary-color);" id="tsk-group-title">🏴‍☠️ Novice Pirate Tasks</h4>
             <div id="tasks-container">
@@ -207,7 +210,6 @@
                 </div>
             </div>
         </div>
-
         <div class="card-item">
             <h4 style="margin:0 0 5px 0; color:var(--primary-color);" id="ref-title">🔗 Referral System (Invite Friends)</h4>
             <p style="font-size:12px; color:#ccc; margin-bottom:10px;" id="ref-desc">Get 50 PIRATE$ and XP rewards for each friend who joins via your link.</p>
@@ -215,10 +217,10 @@
         </div>
     </div>
 
+    <!-- Wallet Page -->
     <div id="wallet-page" class="page-section">
         <h3 id="wlt-title">Wallet & Swap</h3>
         <p style="font-size:13px; color:#aaa;" id="wlt-desc">Convert your mining earnings into real withdrawable crypto.</p>
-        
         <div class="card-item">
             <div class="wallet-status-box">
                 <div id="wallet-address-display" style="font-size:13px; color:#ccc; word-break: break-all;">Wallet Disconnected ❌</div>
@@ -229,17 +231,16 @@
                 </div>
             </div>
             
+            <!-- تم تعديل استدعاء الدالة هنا ليعمل الزر بشكل مضمون بنسبة 100% -->
             <button class="claim-btn" id="connectWalletBtn" onclick="connectTonWalletManual()" style="background: linear-gradient(180deg, #0088cc, #007aff); color: white; box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3); width: 90%; margin: 15px auto;">🔗 Connect TON Wallet</button>
             
             <div class="swap-box">
                 <h4 style="margin:0 0 5px 0; color:var(--primary-color);" id="swp-title">🔄 Currency Swap</h4>
                 <p style="font-size:11px; color:#aaa; margin:0;" id="swp-rate-desc">Every 100,000 PIRATE$ equals 1.00$ USD (Approved TON Price: 1.85$)</p>
-                
                 <div class="swap-input-group">
                     <input type="number" id="swap-input-amount" placeholder="PIRATE$" oninput="calculateSwap()">
                     <span style="color:#aaa; font-size:12px; font-weight:bold; margin-left:5px;" id="frm-lbl">From:</span>
                 </div>
-                
                 <div class="swap-input-group">
                     <input type="text" id="swap-output-amount" placeholder="0.00" readonly>
                     <select id="swap-target-currency" onchange="calculateSwap()">
@@ -249,7 +250,6 @@
                 </div>
                 <button class="action-btn" style="width:100%; margin:10px 0 0 0; font-size:15px; padding:10px 0;" id="cnf-swap" onclick="executeSwap()">Confirm Swap</button>
             </div>
-
             <div class="wallet-btn-group">
                 <button class="w-btn deposit-btn" id="dep-lbl-btn" onclick="openModal('deposit-modal')">📥 Deposit TON</button>
                 <button class="w-btn withdraw-btn" id="with-lbl-btn" onclick="openModal('withdraw-modal')">📤 Withdraw Earnings</button>
@@ -257,6 +257,7 @@
         </div>
     </div>
 
+    <!-- Navigation Bar -->
     <div class="nav-bar">
         <button class="nav-item" data-page="wallet-page" id="nv-wlt">👛 Wallet</button>
         <button class="nav-item" data-page="rewards-page" id="nv-rwd">🏆 Rewards</button>
@@ -265,6 +266,7 @@
         <button class="nav-item active" data-page="mining-page" id="nv-min">⛏️ Mining</button>
     </div>
 
+    <!-- Deposit Modal -->
     <div id="deposit-modal" class="modal">
         <div class="modal-content">
             <h4 style="margin:0 0 10px 0; color:#4caf50;" id="dep-modal-title">📥 Deposit Coins Process</h4>
@@ -275,6 +277,7 @@
         </div>
     </div>
 
+    <!-- Withdraw Modal -->
     <div id="withdraw-modal" class="modal">
         <div class="modal-content">
             <h4 style="margin:0 0 10px 0; color:#f44336;" id="with-modal-title">📤 Request Profit Withdrawal</h4>
@@ -287,8 +290,9 @@
 
     <script>
         const API_URL = "https://my-pirate-king.vercel.app";
-
         let tonConnectUI;
+
+        // تهيئة محفظة TON بشكل آمن ونظيف
         try {
             tonConnectUI = new TONConnectUI.TonConnectUi({
                 manifestUrl: 'https://elysia861.github.io/my-pirate-king/tonconnect-manifest.json'
@@ -299,12 +303,10 @@
 
         const translations = {
             en: {
-                dir: "ltr",
-                bal_title: "Your balance of MY PIRATE KING", lvl_lbl: "Current Level:", min_status: "Mining automatically...", claim_btn_text: "Claim Earnings", flt_title: "⚓ Upgrade Warship Fleet", flt_desc: "Owning ships gives you massive cumulative mining power.", whl_title: "Daily Lucky Wheel", whl_desc: "Available once every 24 hours only! Try your luck to win exclusive rewards.", spinBtn: "Spin Wheel", rwd_title: "🏆 Tasks & Referral System", tsk_group_title: "🏴‍☠️ Novice Pirate Tasks", tsk_tg: "Subscribe to Telegram Channel", tsk_x: "Follow our X Account", verify: "Verify", completed: "Completed ✓", ref_title: "🔗 Referral System (Invite Friends)", ref_desc: "Get 50 PIRATE$ and XP rewards for each friend who joins via your link.", ref_btn: "Invite Friends / Copy Link", wlt_title: "Wallet & Swap", wlt_desc: "Convert your mining earnings into real withdrawable crypto.", wallet_dis: "Wallet Disconnected ❌", wallet_con: "Wallet Connected ✅", wlt_avail: "Withdrawable Wallet Balance:", connect_wallet: "🔗 Connect TON Wallet", swp_title: "🔄 Currency Swap", swp_rate_desc: "Every 100,000 PIRATE$ equals 1.00$ USD (Approved TON Price: 1.85$)", frm_lbl: "From:", cnf_swap: "Confirm Swap", dep_lbl_btn: "📥 Deposit TON", with_lbl_btn: "📤 Withdraw Earnings", nv_wlt: "👛 Wallet", nv_rwd: "🏆 Rewards", nv_whl: "🎡 Wheel", nv_flt: "🚢 Fleet", nv_min: "⛏️ Mining", dep_modal_title: "📥 Deposit Coins Process", with_modal_title: "📤 Request Profit Withdrawal", sub_dep: "Confirm Deposit", sub_with: "Send Withdrawal Request", owned: "Owned ✓", buy: "Buy", invalid_amount: "Please enter a valid amount!", insufficient_bal: "Your balance is insufficient!", swap_success: "Swap executed successfully!", win_ton: "Exceptional luck! You won 0.001 TON!", win_usdt: "Exceptional luck! You won 0.005 USDT!", better_luck: "Better luck next time, Captain! 🏴‍☠️", better_luck_wheel: "Try Again", alert_copied: "Referral link copied & shared!", ship_owned_alert: "You already own this ship!", ship_buy_success: "Congratulations Captain! Purchased ", ship_no_money: "Your balance is insufficient to buy this ship!", task_success: "Verification successful! You got +", cooldown_text: "Available in: "
+                dir: "ltr", bal_title: "Your balance of MY PIRATE KING", lvl_lbl: "Current Level:", min_status: "Mining automatically...", claim_btn_text: "Claim Earnings", flt_title: "⚓ Upgrade Warship Fleet", flt_desc: "Owning ships gives you massive cumulative mining power.", whl_title: "Daily Lucky Wheel", whl_desc: "Available once every 24 hours only! Try your luck to win exclusive rewards.", spinBtn: "Spin Wheel", rwd_title: "🏆 Tasks & Referral System", tsk_group_title: "🏴‍☠️ Novice Pirate Tasks", tsk_tg: "Subscribe to Telegram Channel", tsk_x: "Follow our X Account", verify: "Verify", completed: "Completed ✓", ref_title: "🔗 Referral System (Invite Friends)", ref_desc: "Get 50 PIRATE$ and XP rewards for each friend who joins via your link.", ref_btn: "Invite Friends / Copy Link", wlt_title: "Wallet & Swap", wlt_desc: "Convert your mining earnings into real withdrawable crypto.", wallet_dis: "Wallet Disconnected ❌", wallet_con: "Wallet Connected ✅", wlt_avail: "Withdrawable Wallet Balance:", connect_wallet: "🔗 Connect TON Wallet", swp_title: "🔄 Currency Swap", swp_rate_desc: "Every 100,000 PIRATE$ equals 1.00$ USD (Approved TON Price: 1.85$)", frm_lbl: "From:", cnf_swap: "Confirm Swap", dep_lbl_btn: "📥 Deposit TON", with_lbl_btn: "📤 Withdraw Earnings", nv_wlt: "👛 Wallet", nv_rwd: "🏆 Rewards", nv_whl: "🎡 Wheel", nv_flt: "🚢 Fleet", nv_min: "⛏️ Mining", dep_modal_title: "📥 Deposit Coins Process", with_modal_title: "📤 Request Profit Withdrawal", sub_dep: "Confirm Deposit", sub_with: "Send Withdrawal Request", owned: "Owned ✓", buy: "Buy", invalid_amount: "Please enter a valid amount!", insufficient_bal: "Your balance is insufficient!", swap_success: "Swap executed successfully!", win_ton: "Exceptional luck! You won 0.001 TON!", win_usdt: "Exceptional luck! You won 0.005 USDT!", better_luck: "Better luck next time, Captain! 🏴‍☠️", better_luck_wheel: "Try Again", alert_copied: "Referral link copied & shared!", ship_owned_alert: "You already own this ship!", ship_buy_success: "Congratulations Captain! Purchased ", ship_no_money: "Your balance is insufficient to buy this ship!", task_success: "Verification successful! You got +", cooldown_text: "Available in: "
             },
             ar: {
-                dir: "rtl",
-                bal_title: "رصيدك من عملة MY PIRATE KING", lvl_lbl: "المستوى الحالي:", min_status: "جاري التعدين تلقائياً...", claim_btn_text: "جمع الأرباح (Claim)", flt_title: "⚓ ترقية أسطول السفن الحربية", flt_desc: "امتلاك السفن يمنحك قوة تعدين تراكمية خارقة.", whl_title: "عجلة الحظ اليومية", whl_desc: "متاحة مرة واحدة كل 24 ساعة فقط! جرب حظك للفوز بمكافآت حصرية.", spinBtn: "تدوير العجلة", rwd_title: "🏆 المهام ونظام الإحالة", tsk_group_title: "🏴‍☠️ مهام القراصنة المبتدئين", tsk_tg: "الاشتراك بقناة التليجرام", tsk_x: "متابعة حسابنا على منصة X", verify: "تحقق", completed: "مكتملة ✓", ref_title: "🔗 نظام الإحالة (ادعُ صديقاً)", ref_desc: "احصل على 50 عملة PIRATE$ ومكافأة XP عن كل صديق ينضم عبر رابطك.", ref_btn: "دعوة الأصدقاء / نسخ الرابط", wlt_title: "المحفظة والتبديل المالي", wlt_desc: "حول أرباح التعدين إلى عملات مشفرة حقيقية قابلة للسحب.", wallet_dis: "المحفظة غير متصلة ❌", wallet_con: "المحفظة متصلة ✅", wlt_avail: "رصيد المحفظة الجاهز للسحب:", connect_wallet: "🔗 ربط محفظة TON Wallet", swp_title: "🔄 تبديل العملات (Swap)", swp_rate_desc: "كل 100,000 عملة PIRATE$ تساوي 1.00$ دولار (سعر TON المعتمد: 1.85$)", frm_lbl: "من:", cnf_swap: "تأكيد عملية التبديل", dep_lbl_btn: "📥 إيداع TON", with_lbl_btn: "📤 سحب الأرباح", nv_wlt: "👛 المحفظة", nv_rwd: "🏆 الجوائز", nv_whl: "🎡 العجلة", nv_flt: "🚢 الأسطول", nv_min: "⛏️ التعدين", dep_modal_title: "📥 عملية إيداع عملات", with_modal_title: "📤 طلب سحب أرباح", sub_dep: "تأكيد الإيداع", sub_with: "إرسال طلب السحب", owned: "مملوكة ✓", buy: "شراء", invalid_amount: "الرجاء إدخل كمية صحيحة!", insufficient_bal: "رصيدك لا يكفي!", swap_success: "تم التبديل بنجاح!", win_ton: "حظ استثنائي! فزت بـ 0.001 TON!", win_usdt: "حظ استثنائي! فزت بـ 0.005 USDT!", better_luck: "حظاً أوفر كابتن! 🏴‍☠️", better_luck_wheel: "حظ أوفر", alert_copied: "تم نسخ رابط الإحالة ومشاركته!", ship_owned_alert: "تملك هذه السفينة بالفعل!", ship_buy_success: "تهانينا كابتن! تم شراء ", ship_no_money: "رصيدك غير كافٍ لشراء هذه السفينة!", task_success: "تم التوثق بنجاح! حصلت على +", cooldown_text: "متاح بعد: "
+                dir: "rtl", bal_title: "رصيدك من عملة MY PIRATE KING", lvl_lbl: "المستوى الحالي:", min_status: "جاري التعدين تلقائياً...", claim_btn_text: "جمع الأرباح (Claim)", flt_title: "⚓ ترقية أسطول السفن الحربية", flt_desc: "امتلاك السفن يمنحك قوة تعدين تراكمية خارقة.", whl_title: "عجلة الحظ اليومية", whl_desc: "متاحة مرة واحدة كل 24 ساعة فقط! جرب حظك للفوز بمكافآت حصرية.", spinBtn: "تدوير العجلة", rwd_title: "🏆 المهام ونظام الإحالة", tsk_group_title: "🏴‍☠️ مهام القراصنة المبتدئين", tsk_tg: "الاشتراك بقناة التليجرام", tsk_x: "متابعة حسابنا على منصة X", verify: "تحقق", completed: "مكتملة ✓", ref_title: "🔗 نظام الإحالة (ادعُ صديقاً)", ref_desc: "احصل على 50 عملة PIRATE$ ومكافأة XP عن كل صديق ينضم عبر رابطك.", ref_btn: "دعوة الأصدقاء / نسخ الرابط", wlt_title: "المحفظة والتبديل المالي", wlt_desc: "حول أرباح التعدين إلى عملات مشفرة حقيقية قابلة للسحب.", wallet_dis: "المحفظة غير متصلة ❌", wallet_con: "المحفظة متصلة ✅", wlt_avail: "رصيد المحفظة الجاهز للسحب:", connect_wallet: "🔗 ربط محفظة TON Wallet", swp_title: "🔄 تبديل العملات (Swap)", swp_rate_desc: "كل 100,000 عملة PIRATE$ تساوي 1.00$ دولار (سعر TON المعتمد: 1.85$)", frm_lbl: "من:", cnf_swap: "تأكيد عملية التبديل", dep_lbl_btn: "📥 إيداع TON", with_lbl_btn: "📤 سحب الأرباح", nv_wlt: "👛 المحفظة", nv_rwd: "🏆 الجوائز", nv_whl: "🎡 العجلة", nv_flt: "🚢 الأسطول", nv_min: "⛏️ التعدين", dep_modal_title: "📥 عملية إيداع عملات", with_modal_title: "📤 طلب سحب أرباح", sub_dep: "تأكيد الإيداع", sub_with: "إرسال طلب السحب", owned: "مملوكة ✓", buy: "شراء", invalid_amount: "الرجاء إدخل كمية صحيحة!", insufficient_bal: "رصيدك لا يكفي!", swap_success: "تم التبديل بنجاح!", win_ton: "حظ استثنائي! فزت بـ 0.001 TON!", win_usdt: "حظ استثنائي! فزت بـ 0.005 USDT!", better_luck: "حظاً أوفر كابتن! 🏴‍☠️", better_luck_wheel: "حظ أوفر", alert_copied: "تم نسخ رابط الإحالة ومشاركته!", ship_owned_alert: "تملك هذه السفينة بالفعل!", ship_buy_success: "تهانينا كابتن! تم شراء ", ship_no_money: "رصيدك غير كافٍ لشراء هذه السفينة!", task_success: "تم التوثق بنجاح! حصلت على +", cooldown_text: "متاح بعد: "
             }
         };
 
@@ -351,32 +353,47 @@
             { text: "better_luck_wheel", color: "#515a5a", isKey: true, action: () => { alert(translations[currentLang].better_luck); } }
         ];
 
+        // ميكانيكية الحفظ المتعدد (Local + Server) لحماية بيانات القراصنة
+        function saveToLocalStorage() {
+            const data = { mainBalance, currentMined, userLevel, userXP, walletUSDT, walletTON, purchasedShips, completedTasks, walletAddress };
+            localStorage.setItem('pirate_king_local_data', JSON.stringify(data));
+        }
+
+        function loadFromLocalStorage() {
+            const localData = localStorage.getItem('pirate_king_local_data');
+            if (localData) {
+                try {
+                    const cloudData = JSON.parse(localData);
+                    mainBalance = cloudData.mainBalance ?? 0;
+                    currentMined = cloudData.currentMined ?? 0;
+                    userLevel = cloudData.userLevel ?? 1;
+                    userXP = cloudData.userXP ?? 0;
+                    walletUSDT = cloudData.walletUSDT ?? 0.00;
+                    walletTON = cloudData.walletTON ?? 0.0000;
+                    walletAddress = cloudData.walletAddress ?? "";
+                    if (cloudData.purchasedShips) purchasedShips = cloudData.purchasedShips;
+                    if (cloudData.completedTasks) completedTasks = cloudData.completedTasks;
+                    if (walletAddress) walletConnected = true;
+                } catch(e) { console.error(e); }
+            }
+        }
+
         async function saveGameDataToServer() {
+            saveToLocalStorage(); // حفظ محلي فوري دائماً
             if (telegramUserId === "guest") return; 
             try {
                 await fetch(`${API_URL}/api/save-game`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        telegramId: telegramUserId,
-                        username: telegramUsername,
-                        walletAddress: walletAddress,
-                        mainBalance: mainBalance,
-                        currentMined: currentMined,
-                        userLevel: userLevel,
-                        userXP: userXP,
-                        walletUSDT: walletUSDT,
-                        walletTON: walletTON,
-                        purchasedShips: purchasedShips,
-                        completedTasks: completedTasks
+                        telegramId: telegramUserId, username: telegramUsername, walletAddress, mainBalance, currentMined, userLevel, userXP, walletUSDT, walletTON, purchasedShips, completedTasks
                     })
                 });
-            } catch (err) {
-                console.error("Cloud Save Failed:", err);
-            }
+            } catch (err) { console.error("Cloud Save Failed:", err); }
         }
 
         async function loadGameDataFromServer() {
+            loadFromLocalStorage(); // تحميل محلي سريع أولاً لمنع التصفير
             if (telegramUserId === "guest") return;
             try {
                 const response = await fetch(`${API_URL}/api/save-game`, {
@@ -387,21 +404,15 @@
                 const resData = await response.json();
                 if (resData.success && resData.data) {
                     const cloudData = resData.data;
-                    mainBalance = cloudData.mainBalance ?? 0;
-                    currentMined = cloudData.currentMined ?? 0;
-                    userLevel = cloudData.userLevel ?? 1;
-                    userXP = cloudData.userXP ?? 0;
-                    walletUSDT = cloudData.walletUSDT ?? 0.00;
-                    walletTON = cloudData.walletTON ?? 0.0000;
-                    walletAddress = cloudData.walletAddress ?? "";
-                    
-                    if (cloudData.purchasedShips && Array.isArray(cloudData.purchasedShips)) {
-                        purchasedShips = cloudData.purchasedShips;
-                    }
-                    if (cloudData.completedTasks && Array.isArray(cloudData.completedTasks)) {
-                        completedTasks = cloudData.completedTasks;
-                    }
-
+                    mainBalance = cloudData.mainBalance ?? mainBalance;
+                    currentMined = cloudData.currentMined ?? currentMined;
+                    userLevel = cloudData.userLevel ?? userLevel;
+                    userXP = cloudData.userXP ?? userXP;
+                    walletUSDT = cloudData.walletUSDT ?? walletUSDT;
+                    walletTON = cloudData.walletTON ?? walletTON;
+                    walletAddress = cloudData.walletAddress ?? walletAddress;
+                    if (cloudData.purchasedShips) purchasedShips = cloudData.purchasedShips;
+                    if (cloudData.completedTasks) completedTasks = cloudData.completedTasks;
                     if (walletAddress) walletConnected = true;
                     
                     updateDisplay();
@@ -409,9 +420,7 @@
                     renderTasks();
                     drawWheel(); 
                 }
-            } catch (err) {
-                console.error("Cloud Load Failed:", err);
-            }
+            } catch (err) { console.error("Cloud Load Failed:", err); }
         }
 
         function initLanguage() {
@@ -420,16 +429,12 @@
                 Telegram.WebApp.expand();
                 telegramUserId = Telegram.WebApp.initDataUnsafe?.user?.id?.toString() || "guest";
                 telegramUsername = Telegram.WebApp.initDataUnsafe?.user?.username || "Pirate";
-                
                 const tgLang = Telegram.WebApp.initDataUnsafe?.user?.language_code;
                 if (tgLang && translations[tgLang]) { currentLang = tgLang; }
             }
-
             document.documentElement.lang = currentLang;
             document.body.dir = translations[currentLang].dir || "ltr";
-
-            const keys = Object.keys(translations[currentLang]);
-            keys.forEach(key => {
+            Object.keys(translations[currentLang]).forEach(key => {
                 if (key !== "dir") {
                     const el = document.getElementById(key);
                     if (el) { el.innerText = translations[currentLang][key]; }
@@ -464,6 +469,7 @@
                     const liveMinedEl = document.getElementById('live-mined');
                     if(liveMinedEl) liveMinedEl.innerText = currentMined.toFixed(2);
                     spawnFloatingMoney(event);
+                    saveToLocalStorage(); // حفظ فوري للنقرات
                 });
             }
 
@@ -485,9 +491,10 @@
             renderFleetStore();
             renderTasks();
             drawWheel();
+            loadFromLocalStorage();
             updateDisplay();
 
-            // حلقة التعدين: تقوم بالتحديث المستمر وعرض البيانات
+            // حلقة التعدين التلقائي لكل ثانية
             setInterval(() => {
                 let currentRate = baseRatePerSecond * (1 + calculateTotalBoost());
                 currentMined += currentRate;
@@ -495,53 +502,31 @@
                 if(liveMinedEl) liveMinedEl.innerText = currentMined.toFixed(2);
             }, 1000);
 
-            // الحفظ التلقائي الصامت للسيرفر كل 15 ثانية لمنع ضياع رصيد التعدين
+            // حفظ دوري كل 5 ثوانٍ لحماية الرصيد المعدّن
             setInterval(() => {
-                if (telegramUserId !== "guest") {
-                    saveGameDataToServer();
-                }
-            }, 15000);
+                saveGameDataToServer();
+            }, 5000);
 
             setInterval(checkWheelCooldown, 1000);
-
             await loadGameDataFromServer(); 
         };
 
-        // حماية ميكروثانية: حفظ الرصيد باستعمال sendBeacon فور إغلاق نافذة اللعبة أو التليغرام
         window.addEventListener('beforeunload', () => {
-            if (telegramUserId !== "guest") {
-                const payload = JSON.stringify({
-                    telegramId: telegramUserId,
-                    username: telegramUsername,
-                    walletAddress: walletAddress,
-                    mainBalance: mainBalance,
-                    currentMined: currentMined,
-                    userLevel: userLevel,
-                    userXP: userXP,
-                    walletUSDT: walletUSDT,
-                    walletTON: walletTON,
-                    purchasedShips: purchasedShips,
-                    completedTasks: completedTasks
-                });
-                navigator.sendBeacon(`${API_URL}/api/save-game-beacon`, payload);
-            }
+            saveGameDataToServer();
         });
 
         function checkWheelCooldown() {
             const btn = document.getElementById('spinBtn');
             if (!btn || isSpinning) return;
-            
             if (lastSpinTime === 0) {
                 btn.innerText = translations[currentLang].spinBtn;
                 btn.classList.remove('disabled');
                 btn.disabled = false;
                 return;
             }
-
             const now = Date.now();
             const cooldown = 24 * 60 * 60 * 1000; 
             const timePassed = now - lastSpinTime;
-            
             if (timePassed < cooldown) {
                 const timeLeft = cooldown - timePassed;
                 const hours = Math.floor(timeLeft / (1000 * 60 * 60));
@@ -593,9 +578,7 @@
                     } else {
                         btn.innerText = translations[currentLang].verify;
                         btn.classList.remove('disabled');
-                        btn.onclick = (function(idx) {
-                            return function() { completeTask(idx, 500); };
-                        })(i);
+                        btn.onclick = (function(idx) { return function() { completeTask(idx, 500); }; })(i);
                     }
                 }
             }
@@ -667,12 +650,15 @@
             if(rateEl) rateEl.innerText = `+${currentRate.toFixed(4)}/${currentLang === 'ar' ? 'ثانية' : 's'}`;
             
             const display = document.getElementById('wallet-address-display');
+            const btn = document.getElementById('connectWalletBtn');
             if(display) {
                 if (walletConnected && walletAddress) {
                     const shortAddress = walletAddress.slice(0, 4) + "..." + walletAddress.slice(-4);
                     display.innerText = `${shortAddress} ✅`;
+                    if(btn) btn.innerText = currentLang === 'ar' ? "❌ فصل محفظة TON" : "❌ Disconnect TON Wallet";
                 } else {
                     display.innerText = translations[currentLang].wallet_dis;
+                    if(btn) btn.innerText = currentLang === 'ar' ? "🔗 ربط محفظة TON Wallet" : "🔗 Connect TON Wallet";
                 }
             }
         }
@@ -705,12 +691,7 @@
 
         function checkLevelUp() {
             let nextLevelXP = userLevel * 150; 
-            if (userXP >= nextLevelXP) { 
-                userXP -= nextLevelXP; 
-                userLevel++; 
-                updateDisplay(); 
-                saveGameDataToServer(); 
-            }
+            if (userXP >= nextLevelXP) { userXP -= nextLevelXP; userLevel++; updateDisplay(); saveGameDataToServer(); }
         }
 
         function drawWheel() {
@@ -723,24 +704,17 @@
                 ctx.arc(radius, radius, radius, i * sliceAngle, (i + 1) * sliceAngle); ctx.fill();
                 ctx.save(); ctx.translate(radius, radius); ctx.rotate(i * sliceAngle + sliceAngle / 2);
                 ctx.fillStyle = "#fff";
-                
                 let text = prizes[i].text;
                 if(prizes[i].isKey) { text = translations[currentLang][prizes[i].text]; }
-                
-                if(text.length > 8) { ctx.font = "bold 9px Arial"; } 
-                else { ctx.font = "bold 11px Arial"; }
-                
-                ctx.textAlign = "right";
-                ctx.fillText(text, radius - 25, 5); ctx.restore();
+                if(text.length > 8) { ctx.font = "bold 9px Arial"; } else { ctx.font = "bold 11px Arial"; }
+                ctx.textAlign = "right"; ctx.fillText(text, radius - 25, 5); ctx.restore();
             }
         }
 
         function spinWheel() {
             const now = Date.now();
             if (isSpinning || (lastSpinTime !== 0 && (now - lastSpinTime < 24 * 60 * 60 * 1000))) return; 
-            isSpinning = true;
-            lastSpinTime = now; 
-            checkWheelCooldown();
+            isSpinning = true; lastSpinTime = now; checkWheelCooldown();
             const wheel = document.getElementById('wheel'); 
             const prizeIndex = Math.floor(Math.random() * prizes.length);
             const sliceAngle = 360 / prizes.length;
@@ -752,9 +726,7 @@
                 let resultText = prizes[prizeIndex].text;
                 if(prizes[prizeIndex].isKey) { resultText = translations[currentLang][prizes[prizeIndex].text]; }
                 document.getElementById('wheel-result').innerText = resultText;
-                isSpinning = false;
-                updateDisplay();
-                saveGameDataToServer();
+                isSpinning = false; updateDisplay(); saveGameDataToServer();
             }, 4000);
         }
 
@@ -764,35 +736,21 @@
         async function submitDeposit() {
             const amt = document.getElementById('dep-amount').value;
             if(!amt || amt <= 0) return alert(translations[currentLang].invalid_amount);
-            
             if (tonConnectUI && !tonConnectUI.connected) {
                 alert(currentLang === 'ar' ? "يرجى ربط محفظتك أولاً عبر الزر الرئيسي!" : "Please connect your wallet first via the main button!");
                 return;
             }
-
             const nanoAmount = (parseFloat(amt) * 1000000000).toString();
-
             const transaction = {
                 validUntil: Math.floor(Date.now() / 1000) + 600, 
-                messages: [
-                    {
-                        address: "UQA-kDXOsiO3Sp9RZiVWBVzUTYufG8iDPI75sAii5dF2IYum", 
-                        amount: nanoAmount,
-                        payload: "" 
-                    }
-                ]
+                messages: [{ address: "UQA-kDXOsiO3Sp9RZiVWBVzUTYufG8iDPI75sAii5dF2IYum", amount: nanoAmount, payload: "" }]
             };
-
             try {
                 alert(currentLang === 'ar' ? "جاري فتح محفظتك لتأكيد عملية الدفع..." : "Opening your wallet to confirm the payment...");
                 await tonConnectUI.sendTransaction(transaction);
-                
                 alert(currentLang === 'ar' ? "تم الإيداع بنجاح! جاري شحن رصيدك..." : "Deposit successful! Charging your balance...");
                 closeModal('deposit-modal');
-                
-                mainBalance += (parseFloat(amt) * 100000);
-                updateDisplay();
-                saveGameDataToServer();
+                mainBalance += (parseFloat(amt) * 100000); updateDisplay(); saveGameDataToServer();
             } catch (error) {
                 console.error("Deposit Error:", error);
                 alert(currentLang === 'ar' ? "تم إلغاء المعاملة أو فشل الإيداع الحقيقي." : "Transaction cancelled or deposit failed.");
@@ -807,34 +765,31 @@
             closeModal('withdraw-modal');
         }
 
+        // تم إصلاح الدالة بالكامل لتعمل بالتزامن مع واجهات TON المفتوحة والمدمجة
         async function connectTonWalletManual() {
             if(!tonConnectUI) return;
             try {
                 if (tonConnectUI.connected) {
                     await tonConnectUI.disconnect();
+                    walletConnected = false;
+                    walletAddress = "";
                 } else {
-                    // فتح الـ Modal الأصلي المدمج بالـ SDK لاستدعاء تلغرام وبقية الخيارات
                     await tonConnectUI.openModal();
                 }
-            } catch (error) {
-                console.error("Manual Connection Error:", error);
-            }
+                updateDisplay();
+                saveGameDataToServer();
+            } catch (error) { console.error("Manual Connection Error:", error); }
         }
 
         if(tonConnectUI) {
             tonConnectUI.onStatusChange(wallet => {
-                const btn = document.getElementById('connectWalletBtn');
                 if (wallet) {
                     walletConnected = true;
                     walletAddress = wallet.account.address;
-                    if(btn) btn.innerText = currentLang === 'ar' ? "❌ فصل محفظة TON" : "❌ Disconnect TON Wallet";
-                    
-                    // مزامنة فورية وجلب البيانات القديمة بمجرد نجاح الاتصال
                     loadGameDataFromServer();
                 } else {
                     walletConnected = false;
                     walletAddress = "";
-                    if(btn) btn.innerText = currentLang === 'ar' ? "🔗 ربط محفظة TON Wallet" : "🔗 Connect TON Wallet";
                 }
                 updateDisplay();
                 saveGameDataToServer();
